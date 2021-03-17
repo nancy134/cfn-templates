@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Create a cluster for each environment"
+Parameters:
+    ClusterName:
+        Description: Name of the cluster
+        Type: String
+        Default: sabre-dev
+
+Resources:
+    ECSCluster:
+        Type: "AWS::ECS::Cluster"
+        Properties:
+            ClusterName: !Ref ClusterName 
+            ClusterSettings: 
+              - 
+                Name: "containerInsights"
+                Value: "disabled"
+            CapacityProviders: 
+              - "FARGATE_SPOT"
+              - "FARGATE"
