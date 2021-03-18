@@ -10,11 +10,17 @@ Resources:
     ECSCluster:
         Type: "AWS::ECS::Cluster"
         Properties:
-            ClusterName: !Ref ClusterName 
-            ClusterSettings: 
-              - 
+            ClusterName: !Ref ClusterName
+            ClusterSettings:
+              -
                 Name: "containerInsights"
                 Value: "disabled"
-            CapacityProviders: 
+            CapacityProviders:
               - "FARGATE_SPOT"
               - "FARGATE"
+
+Outputs:
+   ECSCluster:
+       Description: "Cluster"
+       Value: !GetAtt ECSCluster.Arn
+

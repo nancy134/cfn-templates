@@ -4,7 +4,13 @@ Parameters:
     VpcId:
       Description: Vpc ID
       Type: String
-      Default: vpc-ee1a3b8b  
+      Default: vpc-ee1a3b8b
+    Subnet1:
+      Type: String
+      Default: "subnet-1c831245"
+    Subnet2:
+      Type: String
+      Default: "subnet-297d0f5e"
 Resources:
     EC2SecurityGroup:
         Type: "AWS::EC2::SecurityGroup"
@@ -52,6 +58,32 @@ Resources:
     ClusterStack:
         Type: AWS::CloudFormation::Stack
         Properties:
-          TemplateURL: file://cluster.template
+          TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/cluster.template"
           Parameters:
             ClusterName: sabre-dev
+    ServiceStack:
+        DependsOn:
+        - ClusterStack
+        - EC2SecurityGroup
+        - EC2SecurityGroup2
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/service.template"
+          Parameters:
+            ECSCluster:
+              Fn::GetAtt:
+              - ClusterStack
+              - Outputs.ECSCluster
+            EC2SecurityGroup2: !Ref EC2SecurityGroup2
+            EC2SecurityGroup: !Ref EC2SecurityGroup
+            LoadBalancerName: "tenant-service-load-balancer"
+            Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
+            Database: "postgres://postgres:murbanapp@murban.cvpifxuzeuhq.us-east-1.rds.amazonaws.com:5432/tenant_dev"
+            Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/tenant-service:latest"
+            TaskDefinitionName: "tenant-service-container"
+            TargetGroupLoadBalancer: "tenant-service-lb-tg"
+            TargetGroupService: "tenant-service-service-tg"
+            Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+            HostedZoneName: "phowma.com."
+            RecordSetName: "tenant-api.phowma.com."
+            ServiceContainerName: "tenant-service-container"
