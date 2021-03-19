@@ -1,6 +1,8 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: "Create service components"
 Parameters:
+    Service:
+        Type: String
     EC2SecurityGroup2:
         Type: "AWS::EC2::SecurityGroup::Id"
         Description: "Security group for load balancer"
@@ -8,33 +10,29 @@ Parameters:
         Type: "AWS::EC2::SecurityGroup::Id"
     ECSCluster:
         Type: "String"
-    LoadBalancerName:
-        Type: "String"
     Subnets:
         Type: List<AWS::EC2::Subnet::Id>
-    Database:
-        Type: "String"
-    Image:
-        Type: "String"
-    TaskDefinitionName:
-        Type: "String"
-    TargetGroupLoadBalancer:
-        Type: "String"
-    TargetGroupService:
-        Type: "String"
     Certificate:
         Type: "String"
     HostedZoneName:
         Type: "String"
-    RecordSetName:
+    DomainCode:
         Type: "String"
-    ServiceContainerName:
+    Domain:
+        Type: "String"
+    DatabaseUserName:
+        Type: "String"
+    DatabasePassword:
+        Type: "String"
+    DatabaseEndPoint:
+        Type: "String"
+    Image:
         Type: "String"
 Resources:
     ElasticLoadBalancingV2LoadBalancer:
         Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
         Properties:
-            Name: !Ref LoadBalancerName
+            Name: !Sub "${DomainCode}-${Service}-load-balancer" 
             Scheme: "internet-facing"
             Type: "application"
             Subnets: !Ref Subnets
@@ -70,7 +68,7 @@ Resources:
         HostedZoneName: !Ref HostedZoneName
         Comment: Zone apex alias targeted to myELB LoadBalancer.
         RecordSets:
-        - Name: !Ref RecordSetName
+        - Name: !Sub "${Service}-api.${Domain}." 
           Type: A
           AliasTarget:
             HostedZoneId: !GetAtt 'ElasticLoadBalancingV2LoadBalancer.CanonicalHostedZoneID'
@@ -84,7 +82,7 @@ Resources:
                 Environment: 
                   - 
                     Name: "DATABASE_URL"
-                    Value: !Ref Database
+                    Value: !Sub "postgres://${DatabaseUserName}:${DatabasePassword}@${DatabaseEndPoint}:5432/${Service}_dev" 
                 Essential: true
                 Image: !Ref Image
                 LogConfiguration: 
@@ -93,7 +91,7 @@ Resources:
                         awslogs-group: "/ecs/tenant-service-task"
                         awslogs-region: !Ref AWS::Region
                         awslogs-stream-prefix: "ecs"
-                Name: !Ref TaskDefinitionName
+                Name: !Sub "${Service}-service-container" 
                 PortMappings: 
                   - 
                     ContainerPort: 8080
@@ -124,7 +122,7 @@ Resources:
                 HttpCode: "200"
             HealthyThresholdCount: 5
             VpcId: "vpc-ee1a3b8b"
-            Name: !Ref TargetGroupLoadBalancer
+            Name: !Sub "${Service}-service-lb-tg" 
             HealthCheckEnabled: true
             TargetGroupAttributes: 
               - 
@@ -168,7 +166,7 @@ Resources:
                 HttpCode: "200"
             HealthyThresholdCount: 5
             VpcId: "vpc-ee1a3b8b"
-            Name: !Ref TargetGroupService
+            Name: !Sub "${Service}-service-service-tg" 
             HealthCheckEnabled: true
             TargetGroupAttributes: 
               - 
@@ -265,7 +263,7 @@ Resources:
             LoadBalancers: 
               - 
                 TargetGroupArn: !Ref ElasticLoadBalancingV2TargetGroup2
-                ContainerName: !Ref ServiceContainerName
+                ContainerName: !Sub "${Service}-service-container" 
                 ContainerPort: 8080
             DesiredCount: 1
             LaunchType: "FARGATE"

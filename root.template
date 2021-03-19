@@ -1,22 +1,36 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: "Root for all clusters"
 Parameters:
-    VpcId:
-      Description: Vpc ID
+    DomainCode:
       Type: String
-      Default: vpc-ee1a3b8b
+      Default: "{{resolve:ssm:/voter-information/common/DomainCode:1}}"
+    Domain:
+      Type: String
+      Default: "{{resolve:ssm:/voter-information/common/Domain:1}}"
+    DatabaseUserName:
+      Type: String
+      Default: "{{resolve:ssm:/voter-information/common/DatabaseUserName:1}}"
+    DatabasePassword:
+      Type: String
+      Default:  "{{resolve:ssm:/voter-information/common/DatabasePassword:1}}"
+    DatabaseEndPoint:
+      Type: String
+      Default: "{{resolve:ssm:/voter-information/common/DatabaseEndPoint:1}}"
+    VpcId:
+      Type: String
+      Default: "{{resolve:ssm:/voter-information/common/VpcId:1}}" 
     Subnet1:
       Type: String
-      Default: "subnet-1c831245"
+      Default: "{{resolve:ssm:/voter-information/common/Subnet1:1}}"
     Subnet2:
       Type: String
-      Default: "subnet-297d0f5e"
+      Default: "{{resolve:ssm:/voter-information/common/Subnet2:1}}"
 Resources:
     EC2SecurityGroup:
         Type: "AWS::EC2::SecurityGroup"
         Properties:
             GroupDescription: "Security Group for the service"
-            GroupName: "service-sg"
+            GroupName: !Sub "${DomainCode}-service-sg" 
             VpcId: !Ref VpcId
             SecurityGroupIngress: 
               - 
@@ -55,12 +69,14 @@ Resources:
               - 
                 CidrIp: "0.0.0.0/0"
                 IpProtocol: "-1"
+
     ClusterStack:
         Type: AWS::CloudFormation::Stack
         Properties:
           TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/cluster.template"
           Parameters:
             ClusterName: sabre-dev
+
     ServiceStack:
         DependsOn:
         - ClusterStack
@@ -74,16 +90,16 @@ Resources:
               Fn::GetAtt:
               - ClusterStack
               - Outputs.ECSCluster
+            Domain: !Ref Domain
+            DomainCode: !Ref DomainCode
             EC2SecurityGroup2: !Ref EC2SecurityGroup2
             EC2SecurityGroup: !Ref EC2SecurityGroup
-            LoadBalancerName: "tenant-service-load-balancer"
             Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
-            Database: "postgres://postgres:murbanapp@murban.cvpifxuzeuhq.us-east-1.rds.amazonaws.com:5432/tenant_dev"
+            HostedZoneName: !Sub "${Domain}." 
+            Service: "tenant"
+            DatabaseUserName: !Ref DatabaseUserName
+            DatabaseEndPoint: !Ref DatabaseEndPoint
+            DatabasePassword: !Ref DatabasePassword
+
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/tenant-service:latest"
-            TaskDefinitionName: "tenant-service-container"
-            TargetGroupLoadBalancer: "tenant-service-lb-tg"
-            TargetGroupService: "tenant-service-service-tg"
             Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
-            HostedZoneName: "phowma.com."
-            RecordSetName: "tenant-api.phowma.com."
-            ServiceContainerName: "tenant-service-container"
