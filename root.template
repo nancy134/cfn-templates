@@ -47,7 +47,7 @@ Resources:
         Type: "AWS::EC2::SecurityGroup"
         Properties:
             GroupDescription: "Security group for the load balancer"
-            GroupName: "loadbalancer-sg"
+            GroupName: !Sub "${DomainCode}-loadbalancer-sg"
             VpcId: !Ref VpcId 
             SecurityGroupIngress: 
               - 

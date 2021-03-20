@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Create the RDS database"
+Parameters:
+    DomainCode:
+      Type: String
+      Default: "{{resolve:ssm:/voter-information/common/DomainCode:2}}"
+    Domain:
+      Type: String
+      Default: "{{resolve:ssm:/voter-information/common/Domain:2}}"
+    DatabaseUserName:
+      Type: String
+      Default: "{{resolve:ssm:/voter-information/common/DatabaseUserName:1}}"
+    DatabasePassword:
+      Type: String
+      Default:  "{{resolve:ssm:/voter-information/common/DatabasePassword:1}}"
+    VpcId:
+      Type: String
+      Default: "{{resolve:ssm:/voter-information/common/VpcId:1}}" 
+Resources:
+    EC2SecurityGroup:
+        Type: "AWS::EC2::SecurityGroup"
+        Properties:
+            GroupDescription: !Sub "Database for ${DomainCode}"
+            GroupName: !Sub "${DomainCode}-rds-sg"
+            VpcId: !Ref VpcId 
+            SecurityGroupIngress: 
+              - 
+                CidrIp: "0.0.0.0/0"
+                FromPort: 5432 
+                IpProtocol: "tcp"
+                ToPort: 5432 
+              - 
+                CidrIpv6: "::/0"
+                FromPort: 5432 
+                IpProtocol: "tcp"
+                ToPort: 5432 
+            SecurityGroupEgress: 
+              - 
+                CidrIp: "0.0.0.0/0"
+                IpProtocol: "-1"
+
+    RDSDBInstance:
+        Type: "AWS::RDS::DBInstance"
+        Properties:
+            DBInstanceIdentifier: !Sub "${DomainCode}-database"
+            AllocatedStorage: 20
+            DBInstanceClass: "db.t2.micro"
+            Engine: "postgres"
+            MasterUsername: !Ref DatabaseUserName 
+            MasterUserPassword: !Ref DatabasePassword 
+            PreferredBackupWindow: "07:54-08:24"
+            BackupRetentionPeriod: 7
+            AvailabilityZone: !Sub "${AWS::Region}b"
+            PreferredMaintenanceWindow: "fri:09:06-fri:09:36"
+            MultiAZ: false
+            EngineVersion: "12.5"
+            AutoMinorVersionUpgrade: true
+            LicenseModel: "postgresql-license"
+            PubliclyAccessible: true
+            StorageType: "gp2"
+            Port: 5432
+            StorageEncrypted: false
+            CopyTagsToSnapshot: true
+            MonitoringInterval: 60
+            EnableIAMDatabaseAuthentication: false
+            EnablePerformanceInsights: false
+            DeletionProtection: false
+            DBSubnetGroupName: "default"
+            VPCSecurityGroups:
+            - !Ref EC2SecurityGroup
+            MaxAllocatedStorage: 1000
+            DBParameterGroupName: "default.postgres12"
+            OptionGroupName: "default:postgres-12"
+            MonitoringRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/rds-monitoring-role"
+            CACertificateIdentifier: "rds-ca-2019"
+
+Outputs:
+    RDSDBInstance:
+        Description: "Database endpoint"
+        Value: !GetAtt RDSDBInstance.Endpoint.Address
