@@ -64,6 +64,8 @@ Resources:
 
     Route53RecordSet:
       Type: AWS::Route53::RecordSetGroup
+      DependsOn:
+      - ElasticLoadBalancingV2LoadBalancer
       Properties:
         HostedZoneName: !Ref HostedZoneName
         Comment: Zone apex alias targeted to myELB LoadBalancer.
@@ -196,6 +198,9 @@ Resources:
 
     ElasticLoadBalancingV2Listener:
         Type: "AWS::ElasticLoadBalancingV2::Listener"
+        DependsOn:
+        - ElasticLoadBalancingV2LoadBalancer
+        - ElasticLoadBalancingV2TargetGroup
         Properties:
             LoadBalancerArn: !Ref ElasticLoadBalancingV2LoadBalancer
             Port: 443
@@ -211,6 +216,8 @@ Resources:
 
     ElasticLoadBalancingV2Listener2:
         Type: "AWS::ElasticLoadBalancingV2::Listener"
+        DependsOn:
+        - ElasticLoadBalancingV2LoadBalancer
         Properties:
             LoadBalancerArn: !Ref ElasticLoadBalancingV2LoadBalancer
             Port: 80
@@ -255,6 +262,7 @@ Resources:
     ECSService:
         DependsOn:
         - ElasticLoadBalancingV2TargetGroup2
+        - ECSTaskDefinition
         - ElasticLoadBalancingV2Listener
         Type: "AWS::ECS::Service"
         Properties:

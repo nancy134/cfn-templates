@@ -3,10 +3,10 @@ Description: "Root for all clusters"
 Parameters:
     DomainCode:
       Type: String
-      Default: "{{resolve:ssm:/voter-information/common/DomainCode:1}}"
+      Default: "{{resolve:ssm:/voter-information/common/DomainCode:2}}"
     Domain:
       Type: String
-      Default: "{{resolve:ssm:/voter-information/common/Domain:1}}"
+      Default: "{{resolve:ssm:/voter-information/common/Domain:2}}"
     DatabaseUserName:
       Type: String
       Default: "{{resolve:ssm:/voter-information/common/DatabaseUserName:1}}"
