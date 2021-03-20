@@ -75,7 +75,7 @@ Resources:
         Properties:
           TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/cluster.template"
           Parameters:
-            ClusterName: sabre-dev
+            ClusterName: !Sub "${DomainCode}-cluster" 
 
     ServiceStack:
         DependsOn:

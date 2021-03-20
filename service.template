@@ -118,7 +118,7 @@ Resources:
                 HttpCode: "200"
             HealthyThresholdCount: 5
             VpcId: "vpc-ee1a3b8b"
-            Name: !Sub "${Service}-service-lb-tg" 
+            Name: !Sub "${DomainCode}-${Service}-service-lb-tg" 
             HealthCheckEnabled: true
             TargetGroupAttributes: 
               - 
@@ -162,7 +162,7 @@ Resources:
                 HttpCode: "200"
             HealthyThresholdCount: 5
             VpcId: "vpc-ee1a3b8b"
-            Name: !Sub "${Service}-service-service-tg" 
+            Name: !Sub "${DomainCode}-${Service}-service-service-tg" 
             HealthCheckEnabled: true
             TargetGroupAttributes: 
               - 
@@ -260,7 +260,7 @@ Resources:
         - ElasticLoadBalancingV2Listener
         Type: "AWS::ECS::Service"
         Properties:
-            ServiceName: "tenant-service-service"
+            ServiceName: !Sub "${DomainCode}-${Service}-service-service"
             Cluster: !Ref ECSCluster
             LoadBalancers: 
               - 
