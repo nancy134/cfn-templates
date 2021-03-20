@@ -87,19 +87,13 @@ Resources:
                     Value: !Sub "postgres://${DatabaseUserName}:${DatabasePassword}@${DatabaseEndPoint}:5432/${Service}_dev" 
                 Essential: true
                 Image: !Ref Image
-                LogConfiguration: 
-                    LogDriver: "awslogs"
-                    Options: 
-                        awslogs-group: "/ecs/tenant-service-task"
-                        awslogs-region: !Ref AWS::Region
-                        awslogs-stream-prefix: "ecs"
-                Name: !Sub "${Service}-service-container" 
+                Name: !Sub "${DomainCode}-${Service}-service-container" 
                 PortMappings: 
                   - 
                     ContainerPort: 8080
                     HostPort: 8080
                     Protocol: "tcp"
-            Family: "tenant-service-task"
+            Family: !Sub "${DomainCode}-${Service}-service-task"
             TaskRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole"
             ExecutionRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/ecsTaskExecutionRole"
             NetworkMode: "awsvpc"
@@ -271,7 +265,7 @@ Resources:
             LoadBalancers: 
               - 
                 TargetGroupArn: !Ref ElasticLoadBalancingV2TargetGroup2
-                ContainerName: !Sub "${Service}-service-container" 
+                ContainerName: !Sub "${DomainCode}-${Service}-service-container" 
                 ContainerPort: 8080
             DesiredCount: 1
             LaunchType: "FARGATE"
