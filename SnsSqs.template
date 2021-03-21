@@ -1,0 +1,103 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Create a cluster for each environment"
+Parameters:
+    DomainCode:
+      Type: String
+      Default: "ph"
+Resources:
+    SNSTopic:
+        Type: "AWS::SNS::Topic"
+        Properties:
+            DisplayName: !Sub "${DomainCode}-new-billing-topic"
+            TopicName: !Sub "${DomainCode}-new-billing-topic"
+
+    SNSTopic2:
+        Type: "AWS::SNS::Topic"
+        Properties:
+            DisplayName: !Sub "${DomainCode}-new-user-topic" 
+            TopicName: !Sub "${DomainCode}-new-user-topic"
+
+    SNSTopicPolicy:
+        Type: "AWS::SNS::TopicPolicy"
+        Properties:
+            PolicyDocument: !Sub "{\"Version\":\"2008-10-17\",\"Id\":\"__default_policy_ID\",\"Statement\":[{\"Sid\":\"__default_statement_ID\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":[\"SNS:GetTopicAttributes\",\"SNS:SetTopicAttributes\",\"SNS:AddPermission\",\"SNS:RemovePermission\",\"SNS:DeleteTopic\",\"SNS:Subscribe\",\"SNS:ListSubscriptionsByTopic\",\"SNS:Publish\",\"SNS:Receive\"],\"Resource\":\"${SNSTopic}\",\"Condition\":{\"StringEquals\":{\"AWS:SourceOwner\":\"${AWS::AccountId}\"}}}]}"
+            Topics: 
+              - !Ref SNSTopic
+
+    SNSTopicPolicy2:
+        Type: "AWS::SNS::TopicPolicy"
+        Properties:
+            PolicyDocument: !Sub "{\"Version\":\"2008-10-17\",\"Id\":\"__default_policy_ID\",\"Statement\":[{\"Sid\":\"__default_statement_ID\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":[\"SNS:GetTopicAttributes\",\"SNS:SetTopicAttributes\",\"SNS:AddPermission\",\"SNS:RemovePermission\",\"SNS:DeleteTopic\",\"SNS:Subscribe\",\"SNS:ListSubscriptionsByTopic\",\"SNS:Publish\",\"SNS:Receive\"],\"Resource\":\"${SNSTopic2}\",\"Condition\":{\"StringEquals\":{\"AWS:SourceOwner\":\"${AWS::AccountId}\"}}}]}"
+            Topics: 
+              - !Ref SNSTopic2
+
+    SQSQueue:
+        Type: "AWS::SQS::Queue"
+        Properties:
+            DelaySeconds: "0"
+            MaximumMessageSize: "262144"
+            MessageRetentionPeriod: "345600"
+            ReceiveMessageWaitTimeSeconds: "0"
+            VisibilityTimeout: "30"
+            QueueName: !Sub "${DomainCode}-new-billing-queue-to-billing"
+
+    SQSQueue2:
+        Type: "AWS::SQS::Queue"
+        Properties:
+            DelaySeconds: "0"
+            MaximumMessageSize: "262144"
+            MessageRetentionPeriod: "345600"
+            ReceiveMessageWaitTimeSeconds: "0"
+            VisibilityTimeout: "30"
+            QueueName: !Sub "${DomainCode}-new-user-queue-to-user"
+
+    SQSQueue3:
+        Type: "AWS::SQS::Queue"
+        Properties:
+            DelaySeconds: "0"
+            MaximumMessageSize: "262144"
+            MessageRetentionPeriod: "345600"
+            ReceiveMessageWaitTimeSeconds: "0"
+            VisibilityTimeout: "30"
+            QueueName: !Sub "${DomainCode}-new-user-queue-to-billing"
+
+    SNSSubscription:
+        Type: "AWS::SNS::Subscription"
+        Properties:
+            TopicArn: !Ref SNSTopic
+            Endpoint: !GetAtt SQSQueue.Arn
+            Protocol: "sqs"
+            RawMessageDelivery: "false"
+            Region: !Ref AWS::Region
+
+    SNSSubscription2:
+        Type: "AWS::SNS::Subscription"
+        Properties:
+            TopicArn: !Ref SNSTopic2
+            Endpoint: !GetAtt SQSQueue2.Arn
+            Protocol: "sqs"
+            RawMessageDelivery: "false"
+            Region: !Ref AWS::Region
+
+    SNSSubscription3:
+        Type: "AWS::SNS::Subscription"
+        Properties:
+            TopicArn: !Ref SNSTopic2
+            Endpoint: !GetAtt SQSQueue3.Arn
+            Protocol: "sqs"
+            RawMessageDelivery: "false"
+            Region: !Ref AWS::Region
+
+Outputs:
+   SNSTopic: 
+       Value: !Ref SNSTopic
+   SNSTopic2:
+       Value: !Ref SNSTopic2
+   SQSQueue:
+       Value: !Ref SQSQueue
+   SQSQueue2:
+       Value: !Ref SQSQueue2
+   SQSQueue3:
+       Value: !Ref SQSQueue3 
+
+
