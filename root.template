@@ -3,28 +3,34 @@ Description: "Root for all clusters"
 Parameters:
     DomainCode:
       Type: String
-      Default: "{{resolve:ssm:/voter-information/common/DomainCode:2}}"
+      Default: "{{resolve:ssm:/ph/DomainCode:1}}"
     Domain:
       Type: String
-      Default: "{{resolve:ssm:/voter-information/common/Domain:2}}"
+      Default: "{{resolve:ssm:/ph/Domain:1}}"
     DatabaseUserName:
       Type: String
-      Default: "{{resolve:ssm:/voter-information/common/DatabaseUserName:1}}"
+      Default: "{{resolve:ssm:/ph/DatabaseUserName:1}}"
     DatabasePassword:
       Type: String
-      Default:  "{{resolve:ssm:/voter-information/common/DatabasePassword:1}}"
-    DatabaseEndPoint:
-      Type: String
-      Default: "{{resolve:ssm:/voter-information/common/DatabaseEndPoint:1}}"
+      Default:  "{{resolve:ssm:/ph/DatabasePassword:1}}"
     VpcId:
       Type: String
-      Default: "{{resolve:ssm:/voter-information/common/VpcId:1}}" 
+      Default: "{{resolve:ssm:/ph/VpcId:1}}" 
     Subnet1:
       Type: String
-      Default: "{{resolve:ssm:/voter-information/common/Subnet1:1}}"
+      Default: "{{resolve:ssm:/ph/Subnet1:1}}"
     Subnet2:
       Type: String
-      Default: "{{resolve:ssm:/voter-information/common/Subnet2:1}}"
+      Default: "{{resolve:ssm:/ph/Subnet2:1}}"
+    BraintreeMerchantId:
+      Type: String
+      Default: "{{resolve:ssm:/ph/BraintreeMerchantId:1}}"
+    BraintreePublicKey:
+      Type: String
+      Default: "{{resolve:ssm:/ph/BraintreePublicKey:1}}"
+    BraintreePrivateKey:
+      Type: String
+      Default: "{{resolve:ssm:/ph/BraintreePrivateKey:1}}"
 Resources:
     EC2SecurityGroup:
         Type: "AWS::EC2::SecurityGroup"
@@ -70,6 +76,28 @@ Resources:
                 CidrIp: "0.0.0.0/0"
                 IpProtocol: "-1"
 
+    CognitoStack:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/cognito.template"
+          Parameters:
+            DomainCode: !Ref DomainCode
+            Domain: !Ref Domain
+
+    S3Stack:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/s3.template"
+          Parameters:
+            DomainCode: !Ref DomainCode
+
+    SnsSqsStack:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/SnsSqs.template"
+          Parameters:
+            DomainCode: !Ref DomainCode
+
     ClusterStack:
         Type: AWS::CloudFormation::Stack
         Properties:
@@ -98,8 +126,40 @@ Resources:
             HostedZoneName: !Sub "${Domain}." 
             Service: "tenant"
             DatabaseUserName: !Ref DatabaseUserName
-            DatabaseEndPoint: !Ref DatabaseEndPoint
             DatabasePassword: !Ref DatabasePassword
-
+            DatabaseEndPoint: !ImportValue RDS-Endpoint
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/tenant-service:latest"
             Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+            evUserService: !Sub "https://user-api.${Domain}"
+            evBillingService: !Sub "https://billing-api.${Domain}"
+            evListingService: !Sub "https://listing-api.${Domain}"
+            evMailService: !Sub "https://mail-api.${Domain}"
+            evBraintreeMerchantId: !Ref BraintreeMerchantId
+            evBraintreePublicKey: !Ref BraintreePublicKey
+            evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evNewBillingTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic
+            evNewUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic2
+            evNewBillingQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue
+            evNewUserQueueToUser:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evNewUserQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evS3Bucket:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketName
+             
+
