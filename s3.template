@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Root for all clusters"
+Parameters:
+    DomainCode:
+      Type: String
+      Default: "ph"
+Resources:
+    S3Bucket:
+        Type: "AWS::S3::Bucket"
+        Properties:
+            BucketName: !Sub "${DomainCode}-s3-images"
+            CorsConfiguration:
+                CorsRules:
+                  -
+                    AllowedHeaders:
+                      - "Authorization"
+                    AllowedMethods:
+                      - "GET"
+                    AllowedOrigins:
+                      - "*"
+
+    S3BucketPolicy:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket
+            PolicyDocument:
+                Version: "2008-10-17"
+                Statement:
+                  -
+                    Sid: "AllowPublicRead"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: "*"
+                    Action: "s3:GetObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket}/*"
+
