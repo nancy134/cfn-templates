@@ -78,3 +78,5 @@ Outputs:
     RDSDBInstance:
         Description: "Database endpoint"
         Value: !GetAtt RDSDBInstance.Endpoint.Address
+        Export:
+          Name: !Sub "${AWS::StackName}-Endpoint"
