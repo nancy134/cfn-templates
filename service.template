@@ -28,6 +28,32 @@ Parameters:
         Type: "String"
     Image:
         Type: "String"
+    evUserService:
+        Type: "String"
+    evBillingService:
+        Type: "String"
+    evListingService:
+        Type: "String"
+    evMailService:
+        Type: "String"
+    evBraintreeMerchantId:
+        Type: "String"
+    evBraintreePublicKey:
+        Type: "String"
+    evBraintreePrivateKey:
+        Type: "String"
+    evNewBillingTopic:
+        Type: "String"
+    evNewUserTopic:
+        Type: "String"
+    evNewBillingQueueToBilling:
+        Type: "String"
+    evNewUserQueueToUser:
+        Type: "String"
+    evNewUserQueueToBilling:
+        Type: "String"
+    evS3Bucket:
+        Type: "String"
 Resources:
     ElasticLoadBalancingV2LoadBalancer:
         Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
@@ -84,7 +110,46 @@ Resources:
                 Environment: 
                   - 
                     Name: "DATABASE_URL"
-                    Value: !Sub "postgres://${DatabaseUserName}:${DatabasePassword}@${DatabaseEndPoint}:5432/${Service}_dev" 
+                    Value: !Sub "postgres://${DatabaseUserName}:${DatabasePassword}@${DatabaseEndPoint}:5432/${DomainCode}_${Service}"
+                  -
+                    Name: "USER_SERVICE"
+                    Value: !Ref evUserService 
+                  -
+                    Name: "BILLING_SERVICE"
+                    Value: !Ref evBillingService
+                  -
+                    Name: "LISTING_SERVICE"
+                    Value: !Ref evListingService
+                  -
+                    Name: "MAIL_SERVICE"
+                    Value: !Ref evMailService
+                  -
+                    Name: "BRAINTREE_MERCHANT_ID"
+                    Value: !Ref evBraintreeMerchantId
+                  -
+                    Name: "BRAINTREE_PUBLIC_KEY"
+                    Value: !Ref evBraintreePublicKey
+                  -
+                    Name: "BRAINTREE_PRIVATE_KEY"
+                    Value: !Ref evBraintreePrivateKey
+                  -
+                    Name: "AWS_SQS_BILLING_EVENT_QUEUE"
+                    Value: !Ref evNewBillingTopic
+                  -
+                    Name: "AWS_SQS_NEW_USER_BILLING_QUEUE"
+                    Value: !Ref evNewUserQueueToBilling
+                  -
+                    Name: "AWS_SQS_NEW_USER_QUEUE"
+                    Value: !Ref evNewUserQueueToUser
+                  -
+                    Name: "AWS_SNS_NEW_USER_TOPIC"
+                    Value: !Ref evNewUserTopic
+                  -
+                    Name: "AWS_SNS_BILLING_EVENT_TOPIC"
+                    Value: !Ref evNewBillingTopic
+                  -
+                    Name: "S3_BUCKET"
+                    Value: !Ref evS3Bucket
                 Essential: true
                 Image: !Ref Image
                 Name: !Sub "${DomainCode}-${Service}-service-container" 
