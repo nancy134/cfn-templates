@@ -1,0 +1,102 @@
+Metadata:
+    Generator: "former2"
+Description: ""
+Parameters:
+    HostedZoneId:
+      Type: "String"
+      Default: "ZZUJ58NORGHYJ"
+    Domain:
+      Type: "String"
+      Default: "phowma.com"
+    DomainCode:
+      Type: "String"
+      Default: "ph"
+    BucketName:
+      Type: "String"
+      Default: "findingcre"
+Resources:
+
+    CloudFrontDistribution:
+        Type: "AWS::CloudFront::Distribution"
+        Properties:
+            DistributionConfig:
+                Aliases:
+                  - !Sub "www.${Domain}"
+                Origins:
+                  -
+                    ConnectionAttempts: 3
+                    ConnectionTimeout: 10
+                    DomainName: !Sub "${S3Bucket}.s3.amazonaws.com"
+                    Id: !Sub "S3-${DomainCode}-${BucketName}"
+                    OriginPath: ""
+                    S3OriginConfig:
+                        OriginAccessIdentity: ""
+                OriginGroups:
+                    Quantity: 0
+                DefaultCacheBehavior:
+                    AllowedMethods:
+                      - "HEAD"
+                      - "GET"
+                    CachedMethods:
+                      - "HEAD"
+                      - "GET"
+                    Compress: false
+                    CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6"
+                    SmoothStreaming: false
+                    TargetOriginId: !Sub "S3-${DomainCode}-${BucketName}"
+                    ViewerProtocolPolicy: "allow-all"
+                CustomErrorResponses:
+                  -
+                    ErrorCode: 403
+                    ResponsePagePath: "/index.html"
+                    ResponseCode: "200"
+                    ErrorCachingMinTTL: 10
+                Comment: ""
+                PriceClass: "PriceClass_All"
+                Enabled: true
+                ViewerCertificate:
+                    AcmCertificateArn: "arn:aws:acm:us-east-1:461318555119:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+                    MinimumProtocolVersion: "TLSv1.2_2019"
+                    SslSupportMethod: "sni-only"
+                Restrictions:
+                    GeoRestriction:
+                        RestrictionType: "none"
+                HttpVersion: "http2"
+                DefaultRootObject: "index.html"
+                IPV6Enabled: true
+
+    Route53RecordSet:
+        Type: "AWS::Route53::RecordSet"
+        Properties:
+            Name: !Sub "www.${Domain}"
+            Type: "A"
+            AliasTarget:
+                HostedZoneId: "Z2FDTNDATAQYW2" 
+                DNSName: !GetAtt
+                  - CloudFrontDistribution
+                  - DomainName
+                EvaluateTargetHealth: false
+            HostedZoneId: !Ref HostedZoneId
+
+    S3Bucket:
+        Type: "AWS::S3::Bucket"
+        Properties:
+            BucketName: !Sub "${DomainCode}-${BucketName}"
+            WebsiteConfiguration:
+                IndexDocument: "index.html"
+                ErrorDocument: "index.html"
+
+    S3BucketPolicy:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                  -
+                    Sid: "AddPerm"
+                    Effect: "Allow"
+                    Principal: "*"
+                    Action: "s3:GetObject"
+                    Resource: !Sub "arn:aws:s3:::${DomainCode}-${BucketName}/*"
+
