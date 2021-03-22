@@ -20,6 +20,8 @@ Parameters:
         Type: "String"
     Domain:
         Type: "String"
+    SubDomain:
+        Type: "String"
     DatabaseUserName:
         Type: "String"
     DatabasePassword:
@@ -96,7 +98,7 @@ Resources:
         HostedZoneName: !Ref HostedZoneName
         Comment: Zone apex alias targeted to myELB LoadBalancer.
         RecordSets:
-        - Name: !Sub "${Service}-api.${Domain}." 
+        - Name: !Sub "${SubDomain}.${Domain}." 
           Type: A
           AliasTarget:
             HostedZoneId: !GetAtt 'ElasticLoadBalancingV2LoadBalancer.CanonicalHostedZoneID'
@@ -213,6 +215,8 @@ Resources:
 
     ElasticLoadBalancingV2TargetGroup2:
         Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
+        DependsOn:
+        - ElasticLoadBalancingV2LoadBalancer
         Properties:
             HealthCheckIntervalSeconds: 30
             HealthCheckPath: "/"
@@ -323,6 +327,8 @@ Resources:
         - ElasticLoadBalancingV2TargetGroup2
         - ECSTaskDefinition
         - ElasticLoadBalancingV2Listener
+        - ElasticLoadBalancingV2Listener2
+        - ElasticLoadBalancingV2ListenerRule
         Type: "AWS::ECS::Service"
         Properties:
             ServiceName: !Sub "${DomainCode}-${Service}-service-service"

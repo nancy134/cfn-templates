@@ -105,7 +105,7 @@ Resources:
           Parameters:
             ClusterName: !Sub "${DomainCode}-cluster" 
 
-    ServiceStack:
+    ServiceStackApi:
         DependsOn:
         - ClusterStack
         - EC2SecurityGroup
@@ -123,8 +123,300 @@ Resources:
             EC2SecurityGroup2: !Ref EC2SecurityGroup2
             EC2SecurityGroup: !Ref EC2SecurityGroup
             Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
-            HostedZoneName: !Sub "${Domain}." 
+            HostedZoneName: !Sub "${Domain}."
+            Service: "api"
+            SubDomain: "ph-api"
+            DatabaseUserName: !Ref DatabaseUserName
+            DatabasePassword: !Ref DatabasePassword
+            DatabaseEndPoint: !ImportValue RDS-Endpoint
+            Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/api-service:latest"
+            Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+            evUserService: !Sub "https://user-api.${Domain}"
+            evBillingService: !Sub "https://billing-api.${Domain}"
+            evListingService: !Sub "https://listing-api.${Domain}"
+            evMailService: !Sub "https://mail-api.${Domain}"
+            evBraintreeMerchantId: !Ref BraintreeMerchantId
+            evBraintreePublicKey: !Ref BraintreePublicKey
+            evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evNewBillingTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic
+            evNewUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic2
+            evNewBillingQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue
+            evNewUserQueueToUser:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evNewUserQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evS3Bucket:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketName
+
+    ServiceStackAuth:
+        DependsOn:
+        - ClusterStack
+        - EC2SecurityGroup
+        - EC2SecurityGroup2
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/service.template"
+          Parameters:
+            ECSCluster:
+              Fn::GetAtt:
+              - ClusterStack
+              - Outputs.ECSCluster
+            Domain: !Ref Domain
+            DomainCode: !Ref DomainCode
+            EC2SecurityGroup2: !Ref EC2SecurityGroup2
+            EC2SecurityGroup: !Ref EC2SecurityGroup
+            Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
+            HostedZoneName: !Sub "${Domain}."
+            Service: "auth"
+            SubDomain: "auth-api"
+            DatabaseUserName: !Ref DatabaseUserName
+            DatabasePassword: !Ref DatabasePassword
+            DatabaseEndPoint: !ImportValue RDS-Endpoint
+            Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/auth-service:latest"
+            Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+            evUserService: !Sub "https://user-api.${Domain}"
+            evBillingService: !Sub "https://billing-api.${Domain}"
+            evListingService: !Sub "https://listing-api.${Domain}"
+            evMailService: !Sub "https://mail-api.${Domain}"
+            evBraintreeMerchantId: !Ref BraintreeMerchantId
+            evBraintreePublicKey: !Ref BraintreePublicKey
+            evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evNewBillingTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic
+            evNewUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic2
+            evNewBillingQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue
+            evNewUserQueueToUser:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evNewUserQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evS3Bucket:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketName
+
+    ServiceStackBilling:
+        DependsOn:
+        - ClusterStack
+        - EC2SecurityGroup
+        - EC2SecurityGroup2
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/service.template"
+          Parameters:
+            ECSCluster:
+              Fn::GetAtt:
+              - ClusterStack
+              - Outputs.ECSCluster
+            Domain: !Ref Domain
+            DomainCode: !Ref DomainCode
+            EC2SecurityGroup2: !Ref EC2SecurityGroup2
+            EC2SecurityGroup: !Ref EC2SecurityGroup
+            Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
+            HostedZoneName: !Sub "${Domain}."
+            Service: "billing"
+            SubDomain: "billing-api"
+            DatabaseUserName: !Ref DatabaseUserName
+            DatabasePassword: !Ref DatabasePassword
+            DatabaseEndPoint: !ImportValue RDS-Endpoint
+            Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/billing-service:latest"
+            Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+            evUserService: !Sub "https://user-api.${Domain}"
+            evBillingService: !Sub "https://billing-api.${Domain}"
+            evListingService: !Sub "https://listing-api.${Domain}"
+            evMailService: !Sub "https://mail-api.${Domain}"
+            evBraintreeMerchantId: !Ref BraintreeMerchantId
+            evBraintreePublicKey: !Ref BraintreePublicKey
+            evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evNewBillingTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic
+            evNewUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic2
+            evNewBillingQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue
+            evNewUserQueueToUser:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evNewUserQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evS3Bucket:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketName
+
+    ServiceStackListing:
+        DependsOn:
+        - ClusterStack
+        - EC2SecurityGroup
+        - EC2SecurityGroup2
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/service.template"
+          Parameters:
+            ECSCluster:
+              Fn::GetAtt:
+              - ClusterStack
+              - Outputs.ECSCluster
+            Domain: !Ref Domain
+            DomainCode: !Ref DomainCode
+            EC2SecurityGroup2: !Ref EC2SecurityGroup2
+            EC2SecurityGroup: !Ref EC2SecurityGroup
+            Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
+            HostedZoneName: !Sub "${Domain}."
+            Service: "listing"
+            SubDomain: "listing-api"
+            DatabaseUserName: !Ref DatabaseUserName
+            DatabasePassword: !Ref DatabasePassword
+            DatabaseEndPoint: !ImportValue RDS-Endpoint
+            Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/listing-service:latest"
+            Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+            evUserService: !Sub "https://user-api.${Domain}"
+            evBillingService: !Sub "https://billing-api.${Domain}"
+            evListingService: !Sub "https://listing-api.${Domain}"
+            evMailService: !Sub "https://mail-api.${Domain}"
+            evBraintreeMerchantId: !Ref BraintreeMerchantId
+            evBraintreePublicKey: !Ref BraintreePublicKey
+            evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evNewBillingTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic
+            evNewUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic2
+            evNewBillingQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue
+            evNewUserQueueToUser:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evNewUserQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evS3Bucket:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketName
+
+
+    ServiceStackMail:
+        DependsOn:
+        - ClusterStack
+        - EC2SecurityGroup
+        - EC2SecurityGroup2
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/service.template"
+          Parameters:
+            ECSCluster:
+              Fn::GetAtt:
+              - ClusterStack
+              - Outputs.ECSCluster
+            Domain: !Ref Domain
+            DomainCode: !Ref DomainCode
+            EC2SecurityGroup2: !Ref EC2SecurityGroup2
+            EC2SecurityGroup: !Ref EC2SecurityGroup
+            Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
+            HostedZoneName: !Sub "${Domain}."
+            Service: "mail"
+            SubDomain: "mail-api"
+            DatabaseUserName: !Ref DatabaseUserName
+            DatabasePassword: !Ref DatabasePassword
+            DatabaseEndPoint: !ImportValue RDS-Endpoint
+            Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/mail-service:latest"
+            Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+            evUserService: !Sub "https://user-api.${Domain}"
+            evBillingService: !Sub "https://billing-api.${Domain}"
+            evListingService: !Sub "https://listing-api.${Domain}"
+            evMailService: !Sub "https://mail-api.${Domain}"
+            evBraintreeMerchantId: !Ref BraintreeMerchantId
+            evBraintreePublicKey: !Ref BraintreePublicKey
+            evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evNewBillingTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic
+            evNewUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic2
+            evNewBillingQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue
+            evNewUserQueueToUser:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evNewUserQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evS3Bucket:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketName
+
+    ServiceStackTenant:
+        DependsOn:
+        - ClusterStack
+        - EC2SecurityGroup
+        - EC2SecurityGroup2
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/service.template"
+          Parameters:
+            ECSCluster:
+              Fn::GetAtt:
+              - ClusterStack
+              - Outputs.ECSCluster
+            Domain: !Ref Domain
+            DomainCode: !Ref DomainCode
+            EC2SecurityGroup2: !Ref EC2SecurityGroup2
+            EC2SecurityGroup: !Ref EC2SecurityGroup
+            Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
+            HostedZoneName: !Sub "${Domain}."
             Service: "tenant"
+            SubDomain: "tenant-api"
             DatabaseUserName: !Ref DatabaseUserName
             DatabasePassword: !Ref DatabasePassword
             DatabaseEndPoint: !ImportValue RDS-Endpoint
@@ -161,5 +453,62 @@ Resources:
               Fn::GetAtt:
                 - S3Stack
                 - Outputs.BucketName
-             
+
+    ServiceStackUser:
+        DependsOn:
+        - ClusterStack
+        - EC2SecurityGroup
+        - EC2SecurityGroup2
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/service.template"
+          Parameters:
+            ECSCluster:
+              Fn::GetAtt:
+              - ClusterStack
+              - Outputs.ECSCluster
+            Domain: !Ref Domain
+            DomainCode: !Ref DomainCode
+            EC2SecurityGroup2: !Ref EC2SecurityGroup2
+            EC2SecurityGroup: !Ref EC2SecurityGroup
+            Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
+            HostedZoneName: !Sub "${Domain}."
+            Service: "user"
+            SubDomain: "user-api"
+            DatabaseUserName: !Ref DatabaseUserName
+            DatabasePassword: !Ref DatabasePassword
+            DatabaseEndPoint: !ImportValue RDS-Endpoint
+            Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/user-service:latest"
+            Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+            evUserService: !Sub "https://user-api.${Domain}"
+            evBillingService: !Sub "https://billing-api.${Domain}"
+            evListingService: !Sub "https://listing-api.${Domain}"
+            evMailService: !Sub "https://mail-api.${Domain}"
+            evBraintreeMerchantId: !Ref BraintreeMerchantId
+            evBraintreePublicKey: !Ref BraintreePublicKey
+            evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evNewBillingTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic
+            evNewUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic2
+            evNewBillingQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue
+            evNewUserQueueToUser:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evNewUserQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evS3Bucket:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketName
 
