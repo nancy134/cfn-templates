@@ -3,19 +3,19 @@ Description: "Create the RDS database"
 Parameters:
     DomainCode:
       Type: String
-      Default: "{{resolve:ssm:/voter-information/common/DomainCode:2}}"
+      Default: "{{resolve:ssm:/ph/DomainCode:1}}"
     Domain:
       Type: String
-      Default: "{{resolve:ssm:/voter-information/common/Domain:2}}"
+      Default: "{{resolve:ssm:/ph/Domain:1}}"
     DatabaseUserName:
       Type: String
-      Default: "{{resolve:ssm:/voter-information/common/DatabaseUserName:1}}"
+      Default: "{{resolve:ssm:/ph/DatabaseUserName:1}}"
     DatabasePassword:
       Type: String
-      Default:  "{{resolve:ssm:/voter-information/common/DatabasePassword:1}}"
+      Default:  "{{resolve:ssm:/ph/DatabasePassword:1}}"
     VpcId:
       Type: String
-      Default: "{{resolve:ssm:/voter-information/common/VpcId:1}}" 
+      Default: "{{resolve:ssm:/ph/VpcId:1}}" 
 Resources:
     EC2SecurityGroup:
         Type: "AWS::EC2::SecurityGroup"
