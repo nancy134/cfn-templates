@@ -4,20 +4,18 @@ Description: ""
 Parameters:
     HostedZoneId:
       Type: "String"
-      Default: "ZZUJ58NORGHYJ"
     Domain:
       Type: "String"
-      Default: "phowma.com"
     DomainCode:
       Type: "String"
-      Default: "ph"
     BucketName:
       Type: "String"
-      Default: "findingcre"
 Resources:
 
     CloudFrontDistribution:
         Type: "AWS::CloudFront::Distribution"
+        DependsOn:
+          - S3Bucket
         Properties:
             DistributionConfig:
                 Aliases:
@@ -67,6 +65,8 @@ Resources:
 
     Route53RecordSet:
         Type: "AWS::Route53::RecordSet"
+        DependsOn:
+          - CloudFrontDistribution
         Properties:
             Name: !Sub "www.${Domain}"
             Type: "A"
@@ -88,6 +88,8 @@ Resources:
 
     S3BucketPolicy:
         Type: "AWS::S3::BucketPolicy"
+        DependsOn:
+          - S3Bucket
         Properties:
             Bucket: !Ref S3Bucket
             PolicyDocument:

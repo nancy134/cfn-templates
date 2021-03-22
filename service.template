@@ -30,6 +30,16 @@ Parameters:
         Type: "String"
     Image:
         Type: "String"
+    evAwsAccessKeyId:
+        Type: "String"
+    evAwsSecretAccessKey:
+        Type: "String"
+    evAwsRegion:
+        Type: "String"
+    evTenantService:
+        Type: "String"
+    evAuthService:
+        Type: "String"
     evUserService:
         Type: "String"
     evBillingService:
