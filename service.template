@@ -124,6 +124,18 @@ Resources:
                     Name: "DATABASE_URL"
                     Value: !Sub "postgres://${DatabaseUserName}:${DatabasePassword}@${DatabaseEndPoint}:5432/${DomainCode}_${Service}"
                   -
+                    Name: "AWS_ACCESS_KEY_ID"
+                    Value: !Ref evAwsAccessKeyId
+                  -
+                    Name: "AWS_SECRET_ACCESS_KEY"
+                    Value: !Ref evAwsSecretAccessKey
+                  - Name: "AWS_REGION"
+                    Value: !Ref evAwsRegion
+                  - Name: "TENANT_SERVICE"
+                    Value: !Ref evTenantService
+                  - Name: "AUTH_SERVICE"
+                    Value: !Ref evAuthService
+                  -
                     Name: "USER_SERVICE"
                     Value: !Ref evUserService 
                   -
@@ -146,7 +158,7 @@ Resources:
                     Value: !Ref evBraintreePrivateKey
                   -
                     Name: "AWS_SQS_BILLING_EVENT_QUEUE"
-                    Value: !Ref evNewBillingTopic
+                    Value: !Ref evNewBillingQueueToBilling
                   -
                     Name: "AWS_SQS_NEW_USER_BILLING_QUEUE"
                     Value: !Ref evNewUserQueueToBilling
