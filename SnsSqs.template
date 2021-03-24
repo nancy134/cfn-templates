@@ -4,6 +4,9 @@ Parameters:
     DomainCode:
       Type: String
       Default: "ph"
+    IAMUser:
+      Type: String
+      Default: "murban"
 Resources:
     SNSTopic:
         Type: "AWS::SNS::Topic"
@@ -41,6 +44,13 @@ Resources:
             VisibilityTimeout: "30"
             QueueName: !Sub "${DomainCode}-new-billing-queue-to-billing"
 
+    SQSQueuePolicy:
+        Type: "AWS::SQS::QueuePolicy"
+        Properties:
+            PolicyDocument: !Sub "{\"Version\": \"2008-10-17\",\"Id\": \"__default_policy_ID\",\"Statement\": [{\"Sid\": \"__owner_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:root\"},\"Action\": \"SQS:*\",\"Resource\": \"${SQSQueue}\"},{\"Sid\": \"__sender_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:user/${IAMUser}\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue}\"},{\"Sid\": \"__receiver_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:user/${IAMUser}\"},\"Action\": [\"SQS:ChangeMessageVisibility\",\"SQS:DeleteMessage\",\"SQS:ReceiveMessage\"],\"Resource\": \"${SQSQueue}\"},{\"Sid\": \"${SNSTopic}\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"*\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue}\",\"Condition\": {\"ArnLike\": {\"aws:SourceArn\": \"${SNSTopic}\"}}}]}"
+            Queues: 
+              - !Ref SQSQueue 
+
     SQSQueue2:
         Type: "AWS::SQS::Queue"
         Properties:
@@ -51,6 +61,13 @@ Resources:
             VisibilityTimeout: "30"
             QueueName: !Sub "${DomainCode}-new-user-queue-to-user"
 
+    SQSQueuePolicy2:
+        Type: "AWS::SQS::QueuePolicy"
+        Properties:
+            PolicyDocument: !Sub "{\"Version\": \"2008-10-17\",\"Id\": \"__default_policy_ID\",\"Statement\": [{\"Sid\": \"__owner_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:root\"},\"Action\": \"SQS:*\",\"Resource\": \"${SQSQueue2}\"},{\"Sid\": \"__sender_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:user/${IAMUser}\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue2}\"},{\"Sid\": \"__receiver_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:user/${IAMUser}\"},\"Action\": [\"SQS:ChangeMessageVisibility\",\"SQS:DeleteMessage\",\"SQS:ReceiveMessage\"],\"Resource\": \"${SQSQueue2}\"},{\"Sid\": \"${SNSTopic2}\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"*\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue2}\",\"Condition\": {\"ArnLike\": {\"aws:SourceArn\": \"${SNSTopic2}\"}}}]}"
+            Queues:
+              - !Ref SQSQueue2
+
     SQSQueue3:
         Type: "AWS::SQS::Queue"
         Properties:
@@ -60,6 +77,13 @@ Resources:
             ReceiveMessageWaitTimeSeconds: "0"
             VisibilityTimeout: "30"
             QueueName: !Sub "${DomainCode}-new-user-queue-to-billing"
+
+    SQSQueuePolicy3:
+        Type: "AWS::SQS::QueuePolicy"
+        Properties:
+            PolicyDocument: !Sub "{\"Version\": \"2008-10-17\",\"Id\": \"__default_policy_ID\",\"Statement\": [{\"Sid\": \"__owner_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:root\"},\"Action\": \"SQS:*\",\"Resource\": \"${SQSQueue3}\"},{\"Sid\": \"__sender_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:user/${IAMUser}\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue3}\"},{\"Sid\": \"__receiver_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:user/${IAMUser}\"},\"Action\": [\"SQS:ChangeMessageVisibility\",\"SQS:DeleteMessage\",\"SQS:ReceiveMessage\"],\"Resource\": \"${SQSQueue3}\"},{\"Sid\": \"${SNSTopic2}\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"*\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue3}\",\"Condition\": {\"ArnLike\": {\"aws:SourceArn\": \"${SNSTopic2}\"}}}]}"
+            Queues: 
+              - !Ref SQSQueue3
 
     SNSSubscription:
         Type: "AWS::SNS::Subscription"

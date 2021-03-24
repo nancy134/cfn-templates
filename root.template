@@ -46,6 +46,9 @@ Parameters:
     BucketName:
       Type: String
       Default: "{{resolve:ssm:/ph/BucketName:1}}"
+    IAMUser:
+      Type: String
+      Default: "{{resolve:ssm:/ph/IAMUser:1}}"
 Resources:
     EC2SecurityGroup:
         Type: "AWS::EC2::SecurityGroup"
@@ -112,6 +115,7 @@ Resources:
           TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/SnsSqs.template"
           Parameters:
             DomainCode: !Ref DomainCode
+            IAMUser: !Ref IAMUser
 
     ClusterStack:
         Type: AWS::CloudFormation::Stack
