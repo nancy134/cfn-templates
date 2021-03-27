@@ -4,9 +4,6 @@ Parameters:
     DomainCode:
       Type: String
       Default: "ph"
-    IAMUser:
-      Type: String
-      Default: "murban"
 Resources:
     SNSTopic:
         Type: "AWS::SNS::Topic"
@@ -47,7 +44,7 @@ Resources:
     SQSQueuePolicy:
         Type: "AWS::SQS::QueuePolicy"
         Properties:
-            PolicyDocument: !Sub "{\"Version\": \"2008-10-17\",\"Id\": \"__default_policy_ID\",\"Statement\": [{\"Sid\": \"__owner_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:root\"},\"Action\": \"SQS:*\",\"Resource\": \"${SQSQueue}\"},{\"Sid\": \"__sender_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:user/${IAMUser}\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue}\"},{\"Sid\": \"__receiver_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:user/${IAMUser}\"},\"Action\": [\"SQS:ChangeMessageVisibility\",\"SQS:DeleteMessage\",\"SQS:ReceiveMessage\"],\"Resource\": \"${SQSQueue}\"},{\"Sid\": \"${SNSTopic}\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"*\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue}\",\"Condition\": {\"ArnLike\": {\"aws:SourceArn\": \"${SNSTopic}\"}}}]}"
+            PolicyDocument: !Sub "{\"Version\": \"2008-10-17\",\"Id\": \"__default_policy_ID\",\"Statement\": [{\"Sid\": \"__owner_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::461318555119:root\"},\"Action\": \"SQS:*\",\"Resource\": \"${SQSQueue.Arn}\"},{\"Sid\": \"topic-subscription-${SNSTopic}\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"*\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue.Arn}\",\"Condition\": {\"ArnLike\": {\"aws:SourceArn\": \"${SNSTopic}\"}}}]}"
             Queues: 
               - !Ref SQSQueue 
 
@@ -64,7 +61,7 @@ Resources:
     SQSQueuePolicy2:
         Type: "AWS::SQS::QueuePolicy"
         Properties:
-            PolicyDocument: !Sub "{\"Version\": \"2008-10-17\",\"Id\": \"__default_policy_ID\",\"Statement\": [{\"Sid\": \"__owner_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:root\"},\"Action\": \"SQS:*\",\"Resource\": \"${SQSQueue2}\"},{\"Sid\": \"__sender_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:user/${IAMUser}\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue2}\"},{\"Sid\": \"__receiver_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:user/${IAMUser}\"},\"Action\": [\"SQS:ChangeMessageVisibility\",\"SQS:DeleteMessage\",\"SQS:ReceiveMessage\"],\"Resource\": \"${SQSQueue2}\"},{\"Sid\": \"${SNSTopic2}\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"*\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue2}\",\"Condition\": {\"ArnLike\": {\"aws:SourceArn\": \"${SNSTopic2}\"}}}]}"
+            PolicyDocument: !Sub "{\"Version\": \"2008-10-17\",\"Id\": \"__default_policy_ID\",\"Statement\": [{\"Sid\": \"__owner_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::461318555119:root\"},\"Action\": \"SQS:*\",\"Resource\": \"${SQSQueue2.Arn}\"},{\"Sid\": \"topic-subscription-${SNSTopic2}\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"*\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue2.Arn}\",\"Condition\": {\"ArnLike\": {\"aws:SourceArn\": \"${SNSTopic2}\"}}}]}"
             Queues:
               - !Ref SQSQueue2
 
@@ -81,7 +78,7 @@ Resources:
     SQSQueuePolicy3:
         Type: "AWS::SQS::QueuePolicy"
         Properties:
-            PolicyDocument: !Sub "{\"Version\": \"2008-10-17\",\"Id\": \"__default_policy_ID\",\"Statement\": [{\"Sid\": \"__owner_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:root\"},\"Action\": \"SQS:*\",\"Resource\": \"${SQSQueue3}\"},{\"Sid\": \"__sender_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:user/${IAMUser}\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue3}\"},{\"Sid\": \"__receiver_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::${AWS::AccountId}:user/${IAMUser}\"},\"Action\": [\"SQS:ChangeMessageVisibility\",\"SQS:DeleteMessage\",\"SQS:ReceiveMessage\"],\"Resource\": \"${SQSQueue3}\"},{\"Sid\": \"${SNSTopic2}\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"*\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue3}\",\"Condition\": {\"ArnLike\": {\"aws:SourceArn\": \"${SNSTopic2}\"}}}]}"
+            PolicyDocument: !Sub "{\"Version\": \"2008-10-17\",\"Id\": \"__default_policy_ID\",\"Statement\": [{\"Sid\": \"__owner_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::461318555119:root\"},\"Action\": \"SQS:*\",\"Resource\": \"${SQSQueue3.Arn}\"},{\"Sid\": \"topic-subscription-${SNSTopic2}\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"*\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue3.Arn}\",\"Condition\": {\"ArnLike\": {\"aws:SourceArn\": \"${SNSTopic2}\"}}}]}"
             Queues: 
               - !Ref SQSQueue3
 
