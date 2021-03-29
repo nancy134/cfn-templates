@@ -46,9 +46,6 @@ Parameters:
     BucketName:
       Type: String
       Default: "{{resolve:ssm:/ph/BucketName:1}}"
-    IAMUser:
-      Type: String
-      Default: "{{resolve:ssm:/ph/IAMUser:1}}"
 Resources:
     EC2SecurityGroup:
         Type: "AWS::EC2::SecurityGroup"
@@ -62,33 +59,6 @@ Resources:
                 FromPort: 8080
                 IpProtocol: "tcp"
                 ToPort: 8080
-            SecurityGroupEgress: 
-              - 
-                CidrIp: "0.0.0.0/0"
-                IpProtocol: "-1"
-
-    EC2SecurityGroup2:
-        Type: "AWS::EC2::SecurityGroup"
-        Properties:
-            GroupDescription: "Security group for the load balancer"
-            GroupName: !Sub "${DomainCode}-loadbalancer-sg"
-            VpcId: !Ref VpcId 
-            SecurityGroupIngress: 
-              - 
-                CidrIp: "0.0.0.0/0"
-                FromPort: 80
-                IpProtocol: "tcp"
-                ToPort: 80
-              - 
-                CidrIpv6: "::/0"
-                FromPort: 80
-                IpProtocol: "tcp"
-                ToPort: 80
-              - 
-                CidrIp: "0.0.0.0/0"
-                FromPort: 443
-                IpProtocol: "tcp"
-                ToPort: 443
             SecurityGroupEgress: 
               - 
                 CidrIp: "0.0.0.0/0"
@@ -115,7 +85,6 @@ Resources:
           TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/SnsSqs.template"
           Parameters:
             DomainCode: !Ref DomainCode
-            IAMUser: !Ref IAMUser
 
     ClusterStack:
         Type: AWS::CloudFormation::Stack
@@ -124,11 +93,19 @@ Resources:
           Parameters:
             ClusterName: !Sub "${DomainCode}-cluster" 
 
+    LoadBalancerStack:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/lb.template"
+          Parameters:
+            DomainCode: !Ref DomainCode
+            Subnets: !Join [",", [!Ref Subnet1, !Ref Subnet2]] 
+            VpcId: !Ref VpcId
+
     ServiceStackApi:
         DependsOn:
         - ClusterStack
         - EC2SecurityGroup
-        - EC2SecurityGroup2
         Type: AWS::CloudFormation::Stack
         Properties:
           TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/service.template"
@@ -137,9 +114,26 @@ Resources:
               Fn::GetAtt:
               - ClusterStack
               - Outputs.ECSCluster
+            ElasticLoadBalancingV2LoadBalancer:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2LoadBalancer 
+            ElasticLoadBalancingV2Listener:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2Listener
+            HostedZoneId:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.HostedZoneId
+            DNSName:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.DNSName
+            ListenerPriority: "1"
+
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
-            EC2SecurityGroup2: !Ref EC2SecurityGroup2
             EC2SecurityGroup: !Ref EC2SecurityGroup
             Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
             HostedZoneName: !Sub "${Domain}."
@@ -191,7 +185,6 @@ Resources:
         DependsOn:
         - ClusterStack
         - EC2SecurityGroup
-        - EC2SecurityGroup2
         Type: AWS::CloudFormation::Stack
         Properties:
           TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/service.template"
@@ -200,9 +193,27 @@ Resources:
               Fn::GetAtt:
               - ClusterStack
               - Outputs.ECSCluster
+            ElasticLoadBalancingV2LoadBalancer:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2LoadBalancer
+            ElasticLoadBalancingV2Listener:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2Listener
+
+            HostedZoneId:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.HostedZoneId
+            DNSName:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.DNSName
+
+            ListenerPriority: "2"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
-            EC2SecurityGroup2: !Ref EC2SecurityGroup2
             EC2SecurityGroup: !Ref EC2SecurityGroup
             Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
             HostedZoneName: !Sub "${Domain}."
@@ -254,7 +265,6 @@ Resources:
         DependsOn:
         - ClusterStack
         - EC2SecurityGroup
-        - EC2SecurityGroup2
         Type: AWS::CloudFormation::Stack
         Properties:
           TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/service.template"
@@ -263,9 +273,27 @@ Resources:
               Fn::GetAtt:
               - ClusterStack
               - Outputs.ECSCluster
+            ElasticLoadBalancingV2LoadBalancer:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2LoadBalancer
+            ElasticLoadBalancingV2Listener:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2Listener
+
+            HostedZoneId:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.HostedZoneId
+            DNSName:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.DNSName
+
+            ListenerPriority: "3"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
-            EC2SecurityGroup2: !Ref EC2SecurityGroup2
             EC2SecurityGroup: !Ref EC2SecurityGroup
             Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
             HostedZoneName: !Sub "${Domain}."
@@ -317,7 +345,6 @@ Resources:
         DependsOn:
         - ClusterStack
         - EC2SecurityGroup
-        - EC2SecurityGroup2
         Type: AWS::CloudFormation::Stack
         Properties:
           TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/service.template"
@@ -326,9 +353,27 @@ Resources:
               Fn::GetAtt:
               - ClusterStack
               - Outputs.ECSCluster
+            ElasticLoadBalancingV2LoadBalancer:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2LoadBalancer
+            ElasticLoadBalancingV2Listener:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2Listener
+
+            HostedZoneId:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.HostedZoneId
+            DNSName:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.DNSName
+
+            ListenerPriority: "4"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
-            EC2SecurityGroup2: !Ref EC2SecurityGroup2
             EC2SecurityGroup: !Ref EC2SecurityGroup
             Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
             HostedZoneName: !Sub "${Domain}."
@@ -381,7 +426,6 @@ Resources:
         DependsOn:
         - ClusterStack
         - EC2SecurityGroup
-        - EC2SecurityGroup2
         Type: AWS::CloudFormation::Stack
         Properties:
           TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/service.template"
@@ -390,9 +434,27 @@ Resources:
               Fn::GetAtt:
               - ClusterStack
               - Outputs.ECSCluster
+            ElasticLoadBalancingV2LoadBalancer:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2LoadBalancer
+            ElasticLoadBalancingV2Listener:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2Listener
+
+            HostedZoneId:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.HostedZoneId
+            DNSName:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.DNSName
+
+            ListenerPriority: "5"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
-            EC2SecurityGroup2: !Ref EC2SecurityGroup2
             EC2SecurityGroup: !Ref EC2SecurityGroup
             Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
             HostedZoneName: !Sub "${Domain}."
@@ -444,7 +506,6 @@ Resources:
         DependsOn:
         - ClusterStack
         - EC2SecurityGroup
-        - EC2SecurityGroup2
         Type: AWS::CloudFormation::Stack
         Properties:
           TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/service.template"
@@ -453,9 +514,27 @@ Resources:
               Fn::GetAtt:
               - ClusterStack
               - Outputs.ECSCluster
+            ElasticLoadBalancingV2LoadBalancer:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2LoadBalancer
+            ElasticLoadBalancingV2Listener:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2Listener
+
+            HostedZoneId:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.HostedZoneId
+            DNSName:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.DNSName
+
+            ListenerPriority: "6"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
-            EC2SecurityGroup2: !Ref EC2SecurityGroup2
             EC2SecurityGroup: !Ref EC2SecurityGroup
             Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
             HostedZoneName: !Sub "${Domain}."
@@ -507,7 +586,6 @@ Resources:
         DependsOn:
         - ClusterStack
         - EC2SecurityGroup
-        - EC2SecurityGroup2
         Type: AWS::CloudFormation::Stack
         Properties:
           TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/service.template"
@@ -516,9 +594,27 @@ Resources:
               Fn::GetAtt:
               - ClusterStack
               - Outputs.ECSCluster
+            ElasticLoadBalancingV2LoadBalancer:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2LoadBalancer
+            ElasticLoadBalancingV2Listener:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2Listener
+
+            HostedZoneId:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.HostedZoneId
+            DNSName:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.DNSName
+
+            ListenerPriority: "7"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
-            EC2SecurityGroup2: !Ref EC2SecurityGroup2
             EC2SecurityGroup: !Ref EC2SecurityGroup
             Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
             HostedZoneName: !Sub "${Domain}."
