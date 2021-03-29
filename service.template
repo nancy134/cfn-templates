@@ -17,6 +17,8 @@ Parameters:
         Type: "String"
     ListenerPriority:
         Type: "String"
+    VpcId:
+        Type: "String"
     Subnets:
         Type: List<AWS::EC2::Subnet::Id>
     Certificate:
@@ -179,7 +181,7 @@ Resources:
             Matcher: 
                 HttpCode: "200"
             HealthyThresholdCount: 5
-            VpcId: "vpc-ee1a3b8b"
+            VpcId: !Ref VpcId 
             Name: !Sub "${DomainCode}-${Service}-service-service-tg" 
             HealthCheckEnabled: true
             TargetGroupAttributes: 

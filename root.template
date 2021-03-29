@@ -131,7 +131,7 @@ Resources:
               - LoadBalancerStack
               - Outputs.DNSName
             ListenerPriority: "1"
-
+            VpcId: !Ref VpcId
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
             EC2SecurityGroup: !Ref EC2SecurityGroup
@@ -210,7 +210,7 @@ Resources:
               Fn::GetAtt:
               - LoadBalancerStack
               - Outputs.DNSName
-
+            VpcId: !Ref VpcId
             ListenerPriority: "2"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
@@ -294,6 +294,7 @@ Resources:
             ListenerPriority: "3"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
+            VpcId: !Ref VpcId
             EC2SecurityGroup: !Ref EC2SecurityGroup
             Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
             HostedZoneName: !Sub "${Domain}."
@@ -374,6 +375,7 @@ Resources:
             ListenerPriority: "4"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
+            VpcId: !Ref VpcId
             EC2SecurityGroup: !Ref EC2SecurityGroup
             Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
             HostedZoneName: !Sub "${Domain}."
@@ -455,6 +457,7 @@ Resources:
             ListenerPriority: "5"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
+            VpcId: !Ref VpcId
             EC2SecurityGroup: !Ref EC2SecurityGroup
             Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
             HostedZoneName: !Sub "${Domain}."
@@ -535,6 +538,7 @@ Resources:
             ListenerPriority: "6"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
+            VpcId: !Ref VpcId
             EC2SecurityGroup: !Ref EC2SecurityGroup
             Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
             HostedZoneName: !Sub "${Domain}."
@@ -615,6 +619,7 @@ Resources:
             ListenerPriority: "7"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
+            VpcId: !Ref VpcId
             EC2SecurityGroup: !Ref EC2SecurityGroup
             Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
             HostedZoneName: !Sub "${Domain}."
