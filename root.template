@@ -7,6 +7,9 @@ Parameters:
     Domain:
       Type: String
       Default: "{{resolve:ssm:/ph/Domain:1}}"
+    CertificateArn:
+      Type: String
+      Default: "{{resolve:ssm:/ph/CertificateArn:1}}"
     DatabaseUserName:
       Type: String
       Default: "{{resolve:ssm:/ph/DatabaseUserName:1}}"
@@ -101,6 +104,7 @@ Resources:
             DomainCode: !Ref DomainCode
             Subnets: !Join [",", [!Ref Subnet1, !Ref Subnet2]] 
             VpcId: !Ref VpcId
+            CertificateArn: !Ref CertificateArn
 
     ServiceStackApi:
         DependsOn:
@@ -143,7 +147,7 @@ Resources:
             DatabasePassword: !Ref DatabasePassword
             DatabaseEndPoint: !ImportValue RDS-Endpoint
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/api-service:latest"
-            Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+            CertificateArn: !Ref CertificateArn
             evAwsAccessKeyId: !Ref AwsAccessKeyId
             evAwsSecretAccessKey: !Ref AwsSecretAccessKey
             evAwsRegion: !Ref AwsRegion
@@ -223,7 +227,7 @@ Resources:
             DatabasePassword: !Ref DatabasePassword
             DatabaseEndPoint: !ImportValue RDS-Endpoint
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/auth-service:latest"
-            Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+            CertificateArn: !Ref CertificateArn
             evAwsAccessKeyId: !Ref AwsAccessKeyId
             evAwsSecretAccessKey: !Ref AwsSecretAccessKey
             evAwsRegion: !Ref AwsRegion
@@ -304,7 +308,7 @@ Resources:
             DatabasePassword: !Ref DatabasePassword
             DatabaseEndPoint: !ImportValue RDS-Endpoint
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/billing-service:latest"
-            Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+            CertificateArn: !Ref CertificateArn
             evAwsAccessKeyId: !Ref AwsAccessKeyId
             evAwsSecretAccessKey: !Ref AwsSecretAccessKey
             evAwsRegion: !Ref AwsRegion
@@ -385,7 +389,7 @@ Resources:
             DatabasePassword: !Ref DatabasePassword
             DatabaseEndPoint: !ImportValue RDS-Endpoint
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/listing-service:latest"
-            Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+            CertificateArn: !Ref CertificateArn
             evAwsAccessKeyId: !Ref AwsAccessKeyId
             evAwsSecretAccessKey: !Ref AwsSecretAccessKey
             evAwsRegion: !Ref AwsRegion
@@ -467,7 +471,7 @@ Resources:
             DatabasePassword: !Ref DatabasePassword
             DatabaseEndPoint: !ImportValue RDS-Endpoint
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/mail-service:latest"
-            Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+            CertificateArn: !Ref CertificateArn
             evAwsAccessKeyId: !Ref AwsAccessKeyId
             evAwsSecretAccessKey: !Ref AwsSecretAccessKey
             evAwsRegion: !Ref AwsRegion
@@ -548,7 +552,7 @@ Resources:
             DatabasePassword: !Ref DatabasePassword
             DatabaseEndPoint: !ImportValue RDS-Endpoint
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/tenant-service:latest"
-            Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+            CertificateArn: !Ref CertificateArn
             evAwsAccessKeyId: !Ref AwsAccessKeyId
             evAwsSecretAccessKey: !Ref AwsSecretAccessKey
             evAwsRegion: !Ref AwsRegion
@@ -629,7 +633,7 @@ Resources:
             DatabasePassword: !Ref DatabasePassword
             DatabaseEndPoint: !ImportValue RDS-Endpoint
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/user-service:latest"
-            Certificate: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+            CertificateArn: !Ref CertificateArn
             evAwsAccessKeyId: !Ref AwsAccessKeyId
             evAwsSecretAccessKey: !Ref AwsSecretAccessKey
             evAwsRegion: !Ref AwsRegion
