@@ -21,8 +21,6 @@ Parameters:
         Type: "String"
     Subnets:
         Type: List<AWS::EC2::Subnet::Id>
-    Certificate:
-        Type: "String"
     HostedZoneName:
         Type: "String"
     DomainCode:

@@ -142,12 +142,11 @@ Resources:
             Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
             HostedZoneName: !Sub "${Domain}."
             Service: "api"
-            SubDomain: "ph-api"
+            SubDomain: !Sub "${DomainCode}-api"
             DatabaseUserName: !Ref DatabaseUserName
             DatabasePassword: !Ref DatabasePassword
             DatabaseEndPoint: !ImportValue RDS-Endpoint
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/api-service:latest"
-            CertificateArn: !Ref CertificateArn
             evAwsAccessKeyId: !Ref AwsAccessKeyId
             evAwsSecretAccessKey: !Ref AwsSecretAccessKey
             evAwsRegion: !Ref AwsRegion
@@ -227,7 +226,6 @@ Resources:
             DatabasePassword: !Ref DatabasePassword
             DatabaseEndPoint: !ImportValue RDS-Endpoint
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/auth-service:latest"
-            CertificateArn: !Ref CertificateArn
             evAwsAccessKeyId: !Ref AwsAccessKeyId
             evAwsSecretAccessKey: !Ref AwsSecretAccessKey
             evAwsRegion: !Ref AwsRegion
@@ -308,7 +306,6 @@ Resources:
             DatabasePassword: !Ref DatabasePassword
             DatabaseEndPoint: !ImportValue RDS-Endpoint
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/billing-service:latest"
-            CertificateArn: !Ref CertificateArn
             evAwsAccessKeyId: !Ref AwsAccessKeyId
             evAwsSecretAccessKey: !Ref AwsSecretAccessKey
             evAwsRegion: !Ref AwsRegion
@@ -389,7 +386,6 @@ Resources:
             DatabasePassword: !Ref DatabasePassword
             DatabaseEndPoint: !ImportValue RDS-Endpoint
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/listing-service:latest"
-            CertificateArn: !Ref CertificateArn
             evAwsAccessKeyId: !Ref AwsAccessKeyId
             evAwsSecretAccessKey: !Ref AwsSecretAccessKey
             evAwsRegion: !Ref AwsRegion
@@ -471,7 +467,6 @@ Resources:
             DatabasePassword: !Ref DatabasePassword
             DatabaseEndPoint: !ImportValue RDS-Endpoint
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/mail-service:latest"
-            CertificateArn: !Ref CertificateArn
             evAwsAccessKeyId: !Ref AwsAccessKeyId
             evAwsSecretAccessKey: !Ref AwsSecretAccessKey
             evAwsRegion: !Ref AwsRegion
@@ -552,7 +547,6 @@ Resources:
             DatabasePassword: !Ref DatabasePassword
             DatabaseEndPoint: !ImportValue RDS-Endpoint
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/tenant-service:latest"
-            CertificateArn: !Ref CertificateArn
             evAwsAccessKeyId: !Ref AwsAccessKeyId
             evAwsSecretAccessKey: !Ref AwsSecretAccessKey
             evAwsRegion: !Ref AwsRegion
@@ -633,7 +627,6 @@ Resources:
             DatabasePassword: !Ref DatabasePassword
             DatabaseEndPoint: !ImportValue RDS-Endpoint
             Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/user-service:latest"
-            CertificateArn: !Ref CertificateArn
             evAwsAccessKeyId: !Ref AwsAccessKeyId
             evAwsSecretAccessKey: !Ref AwsSecretAccessKey
             evAwsRegion: !Ref AwsRegion
@@ -680,3 +673,4 @@ Resources:
               Domain: !Ref Domain
               DomainCode: !Ref DomainCode
               BucketName: !Ref BucketName
+              CertificateArn: !Ref CertificateArn

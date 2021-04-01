@@ -10,6 +10,8 @@ Parameters:
       Type: "String"
     BucketName:
       Type: "String"
+    CertificateArn:
+      Type: "String"
 Resources:
 
     CloudFrontDistribution:
@@ -53,7 +55,7 @@ Resources:
                 PriceClass: "PriceClass_All"
                 Enabled: true
                 ViewerCertificate:
-                    AcmCertificateArn: "arn:aws:acm:us-east-1:461318555119:certificate/e98f2f9e-b1eb-4787-8e1b-6eb22ee01258"
+                    AcmCertificateArn: !Ref CertificateArn 
                     MinimumProtocolVersion: "TLSv1.2_2019"
                     SslSupportMethod: "sni-only"
                 Restrictions:
