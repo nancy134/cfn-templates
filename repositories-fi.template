@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Root for all repositories"
+
+Resources:
+  RepositoryStackAuth:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+        TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/repository.template"
+        Parameters:
+            ServiceName: "auth"
+
+  RepositoryStackApi:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+        TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/repository.template"
+        Parameters:
+            ServiceName: "api"
+
+  RepositoryStackBilling:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+        TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/repository.template"
+        Parameters:
+            ServiceName: "billing"
+
+  RepositoryStackListing:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+        TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/repository.template"
+        Parameters:
+            ServiceName: "listing"
+
+  RepositoryStackMail:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+        TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/repository.template"
+        Parameters:
+            ServiceName: "mail"
+
+  RepositoryStackTenant:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+        TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/repository.template"
+        Parameters:
+            ServiceName: "tenant"
+
+  RepositoryStackUser:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+        TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/repository.template"
+        Parameters:
+            ServiceName: "user"
