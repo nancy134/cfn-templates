@@ -1,0 +1,688 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Root for all clusters"
+Parameters:
+    DomainCode:
+      Type: String
+      Default: "{{resolve:ssm:/fi/DomainCode:1}}"
+    Domain:
+      Type: String
+      Default: "{{resolve:ssm:/fi/Domain:1}}"
+    CertificateArn:
+      Type: String
+      Default: "{{resolve:ssm:/fi/CertificateArn:1}}"
+    DatabaseUserName:
+      Type: String
+      Default: "{{resolve:ssm:/fi/DatabaseUserName:1}}"
+    DatabasePassword:
+      Type: String
+      Default: "{{resolve:ssm:/fi/DatabasePassword:1}}"
+    VpcId:
+      Type: String
+      Default: "{{resolve:ssm:/fi/VpcId:1}}" 
+    Subnet1:
+      Type: String
+      Default: "{{resolve:ssm:/fi/Subnet1:1}}"
+    Subnet2:
+      Type: String
+      Default: "{{resolve:ssm:/fi/Subnet2:1}}"
+    BraintreeMerchantId:
+      Type: String
+      Default: "{{resolve:ssm:/fi/BraintreeMerchantId:1}}"
+    BraintreePublicKey:
+      Type: String
+      Default: "{{resolve:ssm:/fi/BraintreePublicKey:1}}"
+    BraintreePrivateKey:
+      Type: String
+      Default: "{{resolve:ssm:/fi/BraintreePrivateKey:1}}"
+    AwsAccessKeyId:
+      Type: String
+      Default: "{{resolve:ssm:/fi/AwsAccessKeyId:1}}"
+    AwsSecretAccessKey:
+      Type: String
+      Default: "{{resolve:ssm:/fi/AwsSecretAccessKey:1}}"
+    AwsRegion:
+      Type: String
+      Default: "{{resolve:ssm:/fi/AwsRegion:1}}"
+    HostedZoneId:
+      Type: String
+      Default: "{{resolve:ssm:/fi/HostedZoneId:1}}"
+    BucketName:
+      Type: String
+      Default: "{{resolve:ssm:/fi/BucketName:1}}"
+Resources:
+    EC2SecurityGroup:
+        Type: "AWS::EC2::SecurityGroup"
+        Properties:
+            GroupDescription: "Security Group for the service"
+            GroupName: !Sub "${DomainCode}-service-sg" 
+            VpcId: !Ref VpcId
+            SecurityGroupIngress: 
+              - 
+                CidrIp: "0.0.0.0/0"
+                FromPort: 8080
+                IpProtocol: "tcp"
+                ToPort: 8080
+            SecurityGroupEgress: 
+              - 
+                CidrIp: "0.0.0.0/0"
+                IpProtocol: "-1"
+
+    TaskExecutionRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        Path: "/"
+        RoleName: "ecsTaskExecutionRole"
+        AssumeRolePolicyDocument: "{\"Version\":\"2008-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+        MaxSessionDuration: 3600
+        ManagedPolicyArns:
+          - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+
+    CognitoStack:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/cognito.template"
+          Parameters:
+            DomainCode: !Ref DomainCode
+            Domain: !Ref Domain
+
+    S3Stack:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/s3.template"
+          Parameters:
+            DomainCode: !Ref DomainCode
+
+    SnsSqsStack:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/SnsSqs.template"
+          Parameters:
+            DomainCode: !Ref DomainCode
+
+    ClusterStack:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/cluster.template"
+          Parameters:
+            ClusterName: !Sub "${DomainCode}-cluster" 
+
+    LoadBalancerStack:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/lb.template"
+          Parameters:
+            DomainCode: !Ref DomainCode
+            Subnets: !Join [",", [!Ref Subnet1, !Ref Subnet2]] 
+            VpcId: !Ref VpcId
+            CertificateArn: !Ref CertificateArn
+
+    ServiceStackApi:
+        DependsOn:
+        - ClusterStack
+        - EC2SecurityGroup
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/service-fi.template"
+          Parameters:
+            ECSCluster:
+              Fn::GetAtt:
+              - ClusterStack
+              - Outputs.ECSCluster
+            ElasticLoadBalancingV2LoadBalancer:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2LoadBalancer 
+            ElasticLoadBalancingV2Listener:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2Listener
+            HostedZoneId:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.HostedZoneId
+            DNSName:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.DNSName
+            TaskExecutionRole: !GetAtt TaskExecutionRole.Arn
+            ListenerPriority: "1"
+            VpcId: !Ref VpcId
+            Domain: !Ref Domain
+            DomainCode: !Ref DomainCode
+            EC2SecurityGroup: !Ref EC2SecurityGroup
+            Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
+            HostedZoneName: !Sub "${Domain}."
+            Service: "api"
+            SubDomain: !Sub "${DomainCode}-api"
+            DatabaseUserName: !Ref DatabaseUserName
+            DatabasePassword: !Ref DatabasePassword
+            DatabaseEndPoint: !ImportValue RDS-fi-Endpoint
+            Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/api-service:latest"
+            evAwsAccessKeyId: !Ref AwsAccessKeyId
+            evAwsSecretAccessKey: !Ref AwsSecretAccessKey
+            evAwsRegion: !Ref AwsRegion
+            evTenantService: !Sub "https://tenant-api.${Domain}"
+            evAuthService: !Sub "https://auth-api.${Domain}"
+            evUserService: !Sub "https://user-api.${Domain}"
+            evBillingService: !Sub "https://billing-api.${Domain}"
+            evListingService: !Sub "https://listing-api.${Domain}"
+            evMailService: !Sub "https://mail-api.${Domain}"
+            evBraintreeMerchantId: !Ref BraintreeMerchantId
+            evBraintreePublicKey: !Ref BraintreePublicKey
+            evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evNewBillingTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic
+            evNewUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic2
+            evNewBillingQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue
+            evNewUserQueueToUser:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evNewUserQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue3
+            evS3Bucket:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketName
+
+    ServiceStackAuth:
+        DependsOn:
+        - ClusterStack
+        - EC2SecurityGroup
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/service-fi.template"
+          Parameters:
+            ECSCluster:
+              Fn::GetAtt:
+              - ClusterStack
+              - Outputs.ECSCluster
+            ElasticLoadBalancingV2LoadBalancer:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2LoadBalancer
+            ElasticLoadBalancingV2Listener:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2Listener
+
+            HostedZoneId:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.HostedZoneId
+            DNSName:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.DNSName
+            TaskExecutionRole: !GetAtt TaskExecutionRole.Arn
+            VpcId: !Ref VpcId
+            ListenerPriority: "2"
+            Domain: !Ref Domain
+            DomainCode: !Ref DomainCode
+            EC2SecurityGroup: !Ref EC2SecurityGroup
+            Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
+            HostedZoneName: !Sub "${Domain}."
+            Service: "auth"
+            SubDomain: "auth-api"
+            DatabaseUserName: !Ref DatabaseUserName
+            DatabasePassword: !Ref DatabasePassword
+            DatabaseEndPoint: !ImportValue RDS-fi-Endpoint
+            Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/auth-service:latest"
+            evAwsAccessKeyId: !Ref AwsAccessKeyId
+            evAwsSecretAccessKey: !Ref AwsSecretAccessKey
+            evAwsRegion: !Ref AwsRegion
+            evTenantService: !Sub "https://tenant-api.${Domain}"
+            evAuthService: !Sub "https://auth-api.${Domain}"
+            evUserService: !Sub "https://user-api.${Domain}"
+            evBillingService: !Sub "https://billing-api.${Domain}"
+            evListingService: !Sub "https://listing-api.${Domain}"
+            evMailService: !Sub "https://mail-api.${Domain}"
+            evBraintreeMerchantId: !Ref BraintreeMerchantId
+            evBraintreePublicKey: !Ref BraintreePublicKey
+            evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evNewBillingTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic
+            evNewUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic2
+            evNewBillingQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue
+            evNewUserQueueToUser:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evNewUserQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue3
+            evS3Bucket:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketName
+
+    ServiceStackBilling:
+        DependsOn:
+        - ClusterStack
+        - EC2SecurityGroup
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/service-fi.template"
+          Parameters:
+            ECSCluster:
+              Fn::GetAtt:
+              - ClusterStack
+              - Outputs.ECSCluster
+            ElasticLoadBalancingV2LoadBalancer:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2LoadBalancer
+            ElasticLoadBalancingV2Listener:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2Listener
+
+            HostedZoneId:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.HostedZoneId
+            DNSName:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.DNSName
+            TaskExecutionRole: !GetAtt TaskExecutionRole.Arn
+            ListenerPriority: "3"
+            Domain: !Ref Domain
+            DomainCode: !Ref DomainCode
+            VpcId: !Ref VpcId
+            EC2SecurityGroup: !Ref EC2SecurityGroup
+            Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
+            HostedZoneName: !Sub "${Domain}."
+            Service: "billing"
+            SubDomain: "billing-api"
+            DatabaseUserName: !Ref DatabaseUserName
+            DatabasePassword: !Ref DatabasePassword
+            DatabaseEndPoint: !ImportValue RDS-fi-Endpoint
+            Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/billing-service:latest"
+            evAwsAccessKeyId: !Ref AwsAccessKeyId
+            evAwsSecretAccessKey: !Ref AwsSecretAccessKey
+            evAwsRegion: !Ref AwsRegion
+            evTenantService: !Sub "https://tenant-api.${Domain}"
+            evAuthService: !Sub "https://auth-api.${Domain}"
+            evUserService: !Sub "https://user-api.${Domain}"
+            evBillingService: !Sub "https://billing-api.${Domain}"
+            evListingService: !Sub "https://listing-api.${Domain}"
+            evMailService: !Sub "https://mail-api.${Domain}"
+            evBraintreeMerchantId: !Ref BraintreeMerchantId
+            evBraintreePublicKey: !Ref BraintreePublicKey
+            evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evNewBillingTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic
+            evNewUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic2
+            evNewBillingQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue
+            evNewUserQueueToUser:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evNewUserQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue3
+            evS3Bucket:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketName
+
+    ServiceStackListing:
+        DependsOn:
+        - ClusterStack
+        - EC2SecurityGroup
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/service-fi.template"
+          Parameters:
+            ECSCluster:
+              Fn::GetAtt:
+              - ClusterStack
+              - Outputs.ECSCluster
+            ElasticLoadBalancingV2LoadBalancer:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2LoadBalancer
+            ElasticLoadBalancingV2Listener:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2Listener
+
+            HostedZoneId:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.HostedZoneId
+            DNSName:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.DNSName
+            TaskExecutionRole: !GetAtt TaskExecutionRole.Arn
+            ListenerPriority: "4"
+            Domain: !Ref Domain
+            DomainCode: !Ref DomainCode
+            VpcId: !Ref VpcId
+            EC2SecurityGroup: !Ref EC2SecurityGroup
+            Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
+            HostedZoneName: !Sub "${Domain}."
+            Service: "listing"
+            SubDomain: "listing-api"
+            DatabaseUserName: !Ref DatabaseUserName
+            DatabasePassword: !Ref DatabasePassword
+            DatabaseEndPoint: !ImportValue RDS-fi-Endpoint
+            Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/listing-service:latest"
+            evAwsAccessKeyId: !Ref AwsAccessKeyId
+            evAwsSecretAccessKey: !Ref AwsSecretAccessKey
+            evAwsRegion: !Ref AwsRegion
+            evTenantService: !Sub "https://tenant-api.${Domain}"
+            evAuthService: !Sub "https://auth-api.${Domain}"
+            evUserService: !Sub "https://user-api.${Domain}"
+            evBillingService: !Sub "https://billing-api.${Domain}"
+            evListingService: !Sub "https://listing-api.${Domain}"
+            evMailService: !Sub "https://mail-api.${Domain}"
+            evBraintreeMerchantId: !Ref BraintreeMerchantId
+            evBraintreePublicKey: !Ref BraintreePublicKey
+            evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evNewBillingTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic
+            evNewUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic2
+            evNewBillingQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue
+            evNewUserQueueToUser:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evNewUserQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue3
+            evS3Bucket:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketName
+
+
+    ServiceStackMail:
+        DependsOn:
+        - ClusterStack
+        - EC2SecurityGroup
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/service-fi.template"
+          Parameters:
+            ECSCluster:
+              Fn::GetAtt:
+              - ClusterStack
+              - Outputs.ECSCluster
+            ElasticLoadBalancingV2LoadBalancer:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2LoadBalancer
+            ElasticLoadBalancingV2Listener:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2Listener
+
+            HostedZoneId:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.HostedZoneId
+            DNSName:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.DNSName
+            TaskExecutionRole: !GetAtt TaskExecutionRole.Arn
+            ListenerPriority: "5"
+            Domain: !Ref Domain
+            DomainCode: !Ref DomainCode
+            VpcId: !Ref VpcId
+            EC2SecurityGroup: !Ref EC2SecurityGroup
+            Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
+            HostedZoneName: !Sub "${Domain}."
+            Service: "mail"
+            SubDomain: "mail-api"
+            DatabaseUserName: !Ref DatabaseUserName
+            DatabasePassword: !Ref DatabasePassword
+            DatabaseEndPoint: !ImportValue RDS-fi-Endpoint
+            Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/mail-service:latest"
+            evAwsAccessKeyId: !Ref AwsAccessKeyId
+            evAwsSecretAccessKey: !Ref AwsSecretAccessKey
+            evAwsRegion: !Ref AwsRegion
+            evTenantService: !Sub "https://tenant-api.${Domain}"
+            evAuthService: !Sub "https://auth-api.${Domain}"
+            evUserService: !Sub "https://user-api.${Domain}"
+            evBillingService: !Sub "https://billing-api.${Domain}"
+            evListingService: !Sub "https://listing-api.${Domain}"
+            evMailService: !Sub "https://mail-api.${Domain}"
+            evBraintreeMerchantId: !Ref BraintreeMerchantId
+            evBraintreePublicKey: !Ref BraintreePublicKey
+            evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evNewBillingTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic
+            evNewUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic2
+            evNewBillingQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue
+            evNewUserQueueToUser:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evNewUserQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue3
+            evS3Bucket:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketName
+
+    ServiceStackTenant:
+        DependsOn:
+        - ClusterStack
+        - EC2SecurityGroup
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/service-fi.template"
+          Parameters:
+            ECSCluster:
+              Fn::GetAtt:
+              - ClusterStack
+              - Outputs.ECSCluster
+            ElasticLoadBalancingV2LoadBalancer:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2LoadBalancer
+            ElasticLoadBalancingV2Listener:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2Listener
+
+            HostedZoneId:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.HostedZoneId
+            DNSName:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.DNSName
+            TaskExecutionRole: !GetAtt TaskExecutionRole.Arn
+            ListenerPriority: "6"
+            Domain: !Ref Domain
+            DomainCode: !Ref DomainCode
+            VpcId: !Ref VpcId
+            EC2SecurityGroup: !Ref EC2SecurityGroup
+            Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
+            HostedZoneName: !Sub "${Domain}."
+            Service: "tenant"
+            SubDomain: "tenant-api"
+            DatabaseUserName: !Ref DatabaseUserName
+            DatabasePassword: !Ref DatabasePassword
+            DatabaseEndPoint: !ImportValue RDS-fi-Endpoint
+            Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/tenant-service:latest"
+            evAwsAccessKeyId: !Ref AwsAccessKeyId
+            evAwsSecretAccessKey: !Ref AwsSecretAccessKey
+            evAwsRegion: !Ref AwsRegion
+            evTenantService: !Sub "https://tenant-api.${Domain}"
+            evAuthService: !Sub "https://auth-api.${Domain}"
+            evUserService: !Sub "https://user-api.${Domain}"
+            evBillingService: !Sub "https://billing-api.${Domain}"
+            evListingService: !Sub "https://listing-api.${Domain}"
+            evMailService: !Sub "https://mail-api.${Domain}"
+            evBraintreeMerchantId: !Ref BraintreeMerchantId
+            evBraintreePublicKey: !Ref BraintreePublicKey
+            evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evNewBillingTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic
+            evNewUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic2
+            evNewBillingQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue
+            evNewUserQueueToUser:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evNewUserQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue3
+            evS3Bucket:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketName
+
+    ServiceStackUser:
+        DependsOn:
+        - ClusterStack
+        - EC2SecurityGroup
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/service-fi.template"
+          Parameters:
+            ECSCluster:
+              Fn::GetAtt:
+              - ClusterStack
+              - Outputs.ECSCluster
+            ElasticLoadBalancingV2LoadBalancer:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2LoadBalancer
+            ElasticLoadBalancingV2Listener:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2Listener
+
+            HostedZoneId:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.HostedZoneId
+            DNSName:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.DNSName
+            TaskExecutionRole: !GetAtt TaskExecutionRole.Arn
+            ListenerPriority: "7"
+            Domain: !Ref Domain
+            DomainCode: !Ref DomainCode
+            VpcId: !Ref VpcId
+            EC2SecurityGroup: !Ref EC2SecurityGroup
+            Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
+            HostedZoneName: !Sub "${Domain}."
+            Service: "user"
+            SubDomain: "user-api"
+            DatabaseUserName: !Ref DatabaseUserName
+            DatabasePassword: !Ref DatabasePassword
+            DatabaseEndPoint: !ImportValue RDS-fi-Endpoint
+            Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/user-service:latest"
+            evAwsAccessKeyId: !Ref AwsAccessKeyId
+            evAwsSecretAccessKey: !Ref AwsSecretAccessKey
+            evAwsRegion: !Ref AwsRegion
+            evTenantService: !Sub "https://tenant-api.${Domain}"
+            evAuthService: !Sub "https://auth-api.${Domain}"
+            evUserService: !Sub "https://user-api.${Domain}"
+            evBillingService: !Sub "https://billing-api.${Domain}"
+            evListingService: !Sub "https://listing-api.${Domain}"
+            evMailService: !Sub "https://mail-api.${Domain}"
+            evBraintreeMerchantId: !Ref BraintreeMerchantId
+            evBraintreePublicKey: !Ref BraintreePublicKey
+            evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evNewBillingTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic
+            evNewUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic2
+            evNewBillingQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue
+            evNewUserQueueToUser:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evNewUserQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue3
+            evS3Bucket:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketName
+
+    AppStack:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/app.template"
+          Parameters:
+              HostedZoneId: !Ref HostedZoneId
+              Domain: !Ref Domain
+              DomainCode: !Ref DomainCode
+              BucketName: !Ref BucketName
+              CertificateArn: !Ref CertificateArn

@@ -1,0 +1,268 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Create service components"
+Parameters:
+    Service:
+        Type: String
+    EC2SecurityGroup:
+        Type: "AWS::EC2::SecurityGroup::Id"
+    ECSCluster:
+        Type: "String"
+    ElasticLoadBalancingV2LoadBalancer:
+        Type: "String"
+    ElasticLoadBalancingV2Listener:
+        Type: "String"
+    HostedZoneId:
+        Type: "String"
+    DNSName:
+        Type: "String"
+    ListenerPriority:
+        Type: "String"
+    VpcId:
+        Type: "String"
+    Subnets:
+        Type: List<AWS::EC2::Subnet::Id>
+    HostedZoneName:
+        Type: "String"
+    DomainCode:
+        Type: "String"
+    Domain:
+        Type: "String"
+    SubDomain:
+        Type: "String"
+    DatabaseUserName:
+        Type: "String"
+    DatabasePassword:
+        Type: "String"
+    DatabaseEndPoint:
+        Type: "String"
+    Image:
+        Type: "String"
+    evAwsAccessKeyId:
+        Type: "String"
+    evAwsSecretAccessKey:
+        Type: "String"
+    evAwsRegion:
+        Type: "String"
+    evTenantService:
+        Type: "String"
+    evAuthService:
+        Type: "String"
+    evUserService:
+        Type: "String"
+    evBillingService:
+        Type: "String"
+    evListingService:
+        Type: "String"
+    evMailService:
+        Type: "String"
+    evBraintreeMerchantId:
+        Type: "String"
+    evBraintreePublicKey:
+        Type: "String"
+    evBraintreePrivateKey:
+        Type: "String"
+    evNewBillingTopic:
+        Type: "String"
+    evNewUserTopic:
+        Type: "String"
+    evNewBillingQueueToBilling:
+        Type: "String"
+    evNewUserQueueToUser:
+        Type: "String"
+    evNewUserQueueToBilling:
+        Type: "String"
+    evS3Bucket:
+        Type: "String"
+    TaskExecutionRole:
+        Type: "String"
+Resources:
+
+    Route53RecordSet:
+      Type: AWS::Route53::RecordSetGroup
+      Properties:
+        HostedZoneName: !Ref HostedZoneName
+        Comment: Zone apex alias targeted to myELB LoadBalancer.
+        RecordSets:
+        - Name: !Sub "${SubDomain}.${Domain}." 
+          Type: A
+          AliasTarget:
+            HostedZoneId: !Ref HostedZoneId
+            DNSName: !Ref DNSName
+
+    ECSTaskDefinition:
+        Type: "AWS::ECS::TaskDefinition"
+        Properties:
+            ContainerDefinitions: 
+              - 
+                Environment: 
+                  - 
+                    Name: "DATABASE_URL"
+                    Value: !Sub "postgres://${DatabaseUserName}:${DatabasePassword}@${DatabaseEndPoint}:5432/${DomainCode}_${Service}"
+                  -
+                    Name: "AWS_ACCESS_KEY_ID"
+                    Value: !Ref evAwsAccessKeyId
+                  -
+                    Name: "AWS_SECRET_ACCESS_KEY"
+                    Value: !Ref evAwsSecretAccessKey
+                  - Name: "AWS_REGION"
+                    Value: !Ref evAwsRegion
+                  - Name: "TENANT_SERVICE"
+                    Value: !Ref evTenantService
+                  - Name: "AUTH_SERVICE"
+                    Value: !Ref evAuthService
+                  -
+                    Name: "USER_SERVICE"
+                    Value: !Ref evUserService 
+                  -
+                    Name: "BILLING_SERVICE"
+                    Value: !Ref evBillingService
+                  -
+                    Name: "LISTING_SERVICE"
+                    Value: !Ref evListingService
+                  -
+                    Name: "MAIL_SERVICE"
+                    Value: !Ref evMailService
+                  -
+                    Name: "BRAINTREE_MERCHANT_ID"
+                    Value: !Ref evBraintreeMerchantId
+                  -
+                    Name: "BRAINTREE_PUBLIC_KEY"
+                    Value: !Ref evBraintreePublicKey
+                  -
+                    Name: "BRAINTREE_PRIVATE_KEY"
+                    Value: !Ref evBraintreePrivateKey
+                  -
+                    Name: "AWS_SQS_BILLING_EVENT_QUEUE"
+                    Value: !Ref evNewBillingQueueToBilling
+                  -
+                    Name: "AWS_SQS_NEW_USER_BILLING_QUEUE"
+                    Value: !Ref evNewUserQueueToBilling
+                  -
+                    Name: "AWS_SQS_NEW_USER_QUEUE"
+                    Value: !Ref evNewUserQueueToUser
+                  -
+                    Name: "AWS_SNS_NEW_USER_TOPIC"
+                    Value: !Ref evNewUserTopic
+                  -
+                    Name: "AWS_SNS_BILLING_EVENT_TOPIC"
+                    Value: !Ref evNewBillingTopic
+                  -
+                    Name: "S3_BUCKET"
+                    Value: !Ref evS3Bucket
+                Essential: true
+                Image: !Ref Image
+                Name: !Sub "${DomainCode}-${Service}-service-container" 
+                PortMappings: 
+                  - 
+                    ContainerPort: 8080
+                    HostPort: 8080
+                    Protocol: "tcp"
+            Family: !Sub "${DomainCode}-${Service}-service-task"
+            TaskRoleArn: !Ref TaskExecutionRole 
+            ExecutionRoleArn: !Ref TaskExecutionRole 
+            NetworkMode: "awsvpc"
+            RequiresCompatibilities: 
+              - "FARGATE"
+            Cpu: "256"
+            Memory: "512"
+            
+    ElasticLoadBalancingV2TargetGroup:
+        Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
+        Properties:
+            HealthCheckIntervalSeconds: 30
+            HealthCheckPath: "/"
+            Port: 80
+            Protocol: "HTTP"
+            HealthCheckPort: "traffic-port"
+            HealthCheckProtocol: "HTTP"
+            HealthCheckTimeoutSeconds: 5
+            UnhealthyThresholdCount: 2
+            TargetType: "ip"
+            Matcher: 
+                HttpCode: "200"
+            HealthyThresholdCount: 5
+            VpcId: !Ref VpcId 
+            Name: !Sub "${DomainCode}-${Service}-service-service-tg" 
+            HealthCheckEnabled: true
+            TargetGroupAttributes: 
+              - 
+                Key: "stickiness.enabled"
+                Value: "false"
+              - 
+                Key: "deregistration_delay.timeout_seconds"
+                Value: "300"
+              - 
+                Key: "stickiness.app_cookie.cookie_name"
+                Value: ""
+              - 
+                Key: "stickiness.type"
+                Value: "lb_cookie"
+              - 
+                Key: "stickiness.lb_cookie.duration_seconds"
+                Value: "86400"
+              - 
+                Key: "slow_start.duration_seconds"
+                Value: "0"
+              - 
+                Key: "stickiness.app_cookie.duration_seconds"
+                Value: "86400"
+              - 
+                Key: "load_balancing.algorithm.type"
+                Value: "round_robin"
+
+    ElasticLoadBalancingV2ListenerRule:
+        Type: "AWS::ElasticLoadBalancingV2::ListenerRule"
+        DependsOn:
+        - ElasticLoadBalancingV2TargetGroup
+        Properties:
+            Priority: !Ref ListenerPriority 
+            ListenerArn: !Ref ElasticLoadBalancingV2Listener
+            Conditions: 
+              - 
+                Field: "host-header"
+                Values: 
+                  - !Sub "${SubDomain}.${Domain}"
+            Actions: 
+              - 
+                Type: "forward"
+                TargetGroupArn: !Ref ElasticLoadBalancingV2TargetGroup
+                ForwardConfig: 
+                    TargetGroups: 
+                      - 
+                        TargetGroupArn: !Ref ElasticLoadBalancingV2TargetGroup
+                        Weight: 1
+                    TargetGroupStickinessConfig: 
+                        Enabled: false
+
+    ECSService:
+        DependsOn:
+        - ElasticLoadBalancingV2TargetGroup
+        - ECSTaskDefinition
+        - ElasticLoadBalancingV2ListenerRule
+        Type: "AWS::ECS::Service"
+        Properties:
+            ServiceName: !Sub "${DomainCode}-${Service}-service-service"
+            Cluster: !Ref ECSCluster
+            LoadBalancers: 
+              - 
+                TargetGroupArn: !Ref ElasticLoadBalancingV2TargetGroup
+                ContainerName: !Sub "${DomainCode}-${Service}-service-container" 
+                ContainerPort: 8080
+            DesiredCount: 1
+            LaunchType: "FARGATE"
+            PlatformVersion: "LATEST"
+            TaskDefinition: !Ref ECSTaskDefinition
+            DeploymentConfiguration: 
+                MaximumPercent: 200
+                MinimumHealthyPercent: 100
+                DeploymentCircuitBreaker: 
+                    Enable: false
+                    Rollback: false
+            NetworkConfiguration: 
+                AwsvpcConfiguration: 
+                    AssignPublicIp: "ENABLED"
+                    SecurityGroups: 
+                      - !Ref EC2SecurityGroup
+                    Subnets: !Ref Subnets
+            HealthCheckGracePeriodSeconds: 0
+            SchedulingStrategy: "REPLICA"
