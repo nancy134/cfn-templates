@@ -278,6 +278,23 @@ Resources:
               - "ALLOW_USER_SRP_AUTH"
             PreventUserExistenceErrors: "ENABLED"
 
+    IAMRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: "sabreAdministrator"
+            AssumeRolePolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"cognito-identity.amazonaws.com\"},\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Condition\":{\"StringEquals\":{\"cognito-identity.amazonaws.com:aud\":\"${CognitoUserPool}\"}}}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - "arn:aws:iam::aws:policy/AdministratorAccess"
+
+    CognitoUserPoolGroup:
+        Type: "AWS::Cognito::UserPoolGroup"
+        Properties:
+            GroupName: "Admin"
+            UserPoolId: !Ref CognitoUserPool
+            RoleArn: !GetAtt IAMRole.Arn
+
 Outputs:
     CognitUserPool:
       Description: "Cognito user pool Id"
