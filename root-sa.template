@@ -10,6 +10,9 @@ Parameters:
     CertificateArn:
       Type: String
       Default: "{{resolve:ssm:/sa/CertificateArn:1}}"
+    CertificateArnNaked:
+      Type: String
+      Default: "{{resolve:ssm:/sa/CertificateArnNaked:1}}"
     DatabaseUserName:
       Type: String
       Default: "{{resolve:ssm:/ph/DatabaseUserName:1}}"
@@ -674,3 +677,15 @@ Resources:
               DomainCode: !Ref DomainCode
               BucketName: !Ref BucketName
               CertificateArn: !Ref CertificateArn
+
+    AppStackNaked:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://cf-templates-d3s3x1vv3h5g-us-east-1.s3.amazonaws.com/app-naked.template"
+          Parameters:
+              HostedZoneId: !Ref HostedZoneId
+              Domain: !Ref Domain
+              DomainCode: !Ref DomainCode
+              BucketName: !Sub "${BucketName}-naked"
+              CertificateArn: !Ref CertificateArnNaked
+

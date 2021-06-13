@@ -10,6 +10,9 @@ Parameters:
     CertificateArn:
       Type: String
       Default: "{{resolve:ssm:/fi/CertificateArn:1}}"
+    CertificateArnNaked:
+      Type: String
+      Default: "{{resolve:ssm:/fi/CertificateArnNaked:1}}"
     DatabaseUserName:
       Type: String
       Default: "{{resolve:ssm:/fi/DatabaseUserName:1}}"
@@ -686,3 +689,15 @@ Resources:
               DomainCode: !Ref DomainCode
               BucketName: !Ref BucketName
               CertificateArn: !Ref CertificateArn
+
+    AppStackNaked:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/app-naked.template"
+          Parameters:
+              HostedZoneId: !Ref HostedZoneId
+              Domain: !Ref Domain
+              DomainCode: !Ref DomainCode
+              BucketName: !Sub "${BucketName}-naked"
+              CertificateArn: !Ref CertificateArnNaked
+
