@@ -1,5 +1,5 @@
-AWSTemplateFormatVersion: "2010-09-09"
-Description: "Create a cluster for each environment"
+
+Description: "Create a SNS and SQS resources"
 Parameters:
     DomainCode:
       Type: String
@@ -17,6 +17,12 @@ Resources:
             DisplayName: !Sub "${DomainCode}-new-user-topic" 
             TopicName: !Sub "${DomainCode}-new-user-topic"
 
+    SNSTopic3:
+        Type: "AWS::SNS::Topic"
+        Properties:
+            DisplayName: !Sub "${DomainCode}-update-user-topic"
+            TopicName: !Sub "${DomainCode}-update-user-topic"
+
     SNSTopicPolicy:
         Type: "AWS::SNS::TopicPolicy"
         Properties:
@@ -29,6 +35,13 @@ Resources:
         Properties:
             PolicyDocument: !Sub "{\"Version\":\"2008-10-17\",\"Id\":\"__default_policy_ID\",\"Statement\":[{\"Sid\":\"__default_statement_ID\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":[\"SNS:GetTopicAttributes\",\"SNS:SetTopicAttributes\",\"SNS:AddPermission\",\"SNS:RemovePermission\",\"SNS:DeleteTopic\",\"SNS:Subscribe\",\"SNS:ListSubscriptionsByTopic\",\"SNS:Publish\",\"SNS:Receive\"],\"Resource\":\"${SNSTopic2}\",\"Condition\":{\"StringEquals\":{\"AWS:SourceOwner\":\"${AWS::AccountId}\"}}}]}"
             Topics: 
+              - !Ref SNSTopic2
+
+    SNSTopicPolicy3:
+        Type: "AWS::SNS::TopicPolicy"
+        Properties:
+            PolicyDocument: !Sub "{\"Version\":\"2008-10-17\",\"Id\":\"__default_policy_ID\",\"Statement\":[{\"Sid\":\"__default_statement_ID\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":[\"SNS:GetTopicAttributes\",\"SNS:SetTopicAttributes\",\"SNS:AddPermission\",\"SNS:RemovePermission\",\"SNS:DeleteTopic\",\"SNS:Subscribe\",\"SNS:ListSubscriptionsByTopic\",\"SNS:Publish\",\"SNS:Receive\"],\"Resource\":\"${SNSTopic2}\",\"Condition\":{\"StringEquals\":{\"AWS:SourceOwner\":\"${AWS::AccountId}\"}}}]}"
+            Topics:
               - !Ref SNSTopic2
 
     SQSQueue:
@@ -81,6 +94,39 @@ Resources:
             PolicyDocument: !Sub "{\"Version\": \"2008-10-17\",\"Id\": \"__default_policy_ID\",\"Statement\": [{\"Sid\": \"__owner_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::461318555119:root\"},\"Action\": \"SQS:*\",\"Resource\": \"${SQSQueue3.Arn}\"},{\"Sid\": \"topic-subscription-${SNSTopic2}\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"*\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue3.Arn}\",\"Condition\": {\"ArnLike\": {\"aws:SourceArn\": \"${SNSTopic2}\"}}}]}"
             Queues: 
               - !Ref SQSQueue3
+    SQSQueue4:
+        Type: "AWS::SQS::Queue"
+        Properties:
+            DelaySeconds: "0"
+            MaximumMessageSize: "262144"
+            MessageRetentionPeriod: "345600"
+            ReceiveMessageWaitTimeSeconds: "0"
+            VisibilityTimeout: "30"
+            QueueName: !Sub "${DomainCode}-new-user-queue-to-listing"
+
+    SQSQueuePolicy4:
+        Type: "AWS::SQS::QueuePolicy"
+        Properties:
+            PolicyDocument: !Sub "{\"Version\": \"2008-10-17\",\"Id\": \"__default_policy_ID\",\"Statement\": [{\"Sid\": \"__owner_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::461318555119:root\"},\"Action\": \"SQS:*\",\"Resource\": \"${SQSQueue4.Arn}\"},{\"Sid\": \"topic-subscription-${SNSTopic2}\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"*\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue4.Arn}\",\"Condition\": {\"ArnLike\": {\"aws:SourceArn\": \"${SNSTopic2}\"}}}]}"
+            Queues:
+              - !Ref SQSQueue4
+
+    SQSQueue5:
+        Type: "AWS::SQS::Queue"
+        Properties:
+            DelaySeconds: "0"
+            MaximumMessageSize: "262144"
+            MessageRetentionPeriod: "345600"
+            ReceiveMessageWaitTimeSeconds: "0"
+            VisibilityTimeout: "30"
+            QueueName: !Sub "${DomainCode}-update-user-queue-to-listing"
+
+    SQSQueuePolicy5:
+        Type: "AWS::SQS::QueuePolicy"
+        Properties:
+            PolicyDocument: !Sub "{\"Version\": \"2008-10-17\",\"Id\": \"__default_policy_ID\",\"Statement\": [{\"Sid\": \"__owner_statement\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"arn:aws:iam::461318555119:root\"},\"Action\": \"SQS:*\",\"Resource\": \"${SQSQueue5.Arn}\"},{\"Sid\": \"topic-subscription-${SNSTopic3}\",\"Effect\": \"Allow\",\"Principal\": {\"AWS\": \"*\"},\"Action\": \"SQS:SendMessage\",\"Resource\": \"${SQSQueue5.Arn}\",\"Condition\": {\"ArnLike\": {\"aws:SourceArn\": \"${SNSTopic3}\"}}}]}"
+            Queues:
+              - !Ref SQSQueue5
 
     SNSSubscription:
         Type: "AWS::SNS::Subscription"
@@ -109,16 +155,40 @@ Resources:
             RawMessageDelivery: "false"
             Region: !Ref AWS::Region
 
+    SNSSubscription4:
+        Type: "AWS::SNS::Subscription"
+        Properties:
+            TopicArn: !Ref SNSTopic2
+            Endpoint: !GetAtt SQSQueue4.Arn
+            Protocol: "sqs"
+            RawMessageDelivery: "false"
+            Region: !Ref AWS::Region
+
+    SNSSubscription5:
+        Type: "AWS::SNS::Subscription"
+        Properties:
+            TopicArn: !Ref SNSTopic3
+            Endpoint: !GetAtt SQSQueue5.Arn
+            Protocol: "sqs"
+            RawMessageDelivery: "false"
+            Region: !Ref AWS::Region
+
 Outputs:
    SNSTopic: 
        Value: !Ref SNSTopic
    SNSTopic2:
        Value: !Ref SNSTopic2
+   SNSTopic3:
+       Value: !Ref SNSTopic3
    SQSQueue:
        Value: !Ref SQSQueue
    SQSQueue2:
        Value: !Ref SQSQueue2
    SQSQueue3:
-       Value: !Ref SQSQueue3 
+       Value: !Ref SQSQueue3
+   SQSQueue4:
+       Value: !Ref SQSQueue4
+   SQSQueue5:
+       Value: !Ref SQSQueue5
 
 
