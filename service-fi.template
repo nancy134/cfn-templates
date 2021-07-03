@@ -65,11 +65,17 @@ Parameters:
         Type: "String"
     evNewUserTopic:
         Type: "String"
+    evUpdateUserTopic:
+        Type: "String"
     evNewBillingQueueToBilling:
         Type: "String"
     evNewUserQueueToUser:
         Type: "String"
     evNewUserQueueToBilling:
+        Type: "String"
+    evNewUserQueueToListing:
+        Type: "String"
+    evUpdateUserQueueToListing:
         Type: "String"
     evS3Bucket:
         Type: "String"
@@ -138,14 +144,24 @@ Resources:
                     Name: "AWS_SQS_NEW_USER_BILLING_QUEUE"
                     Value: !Ref evNewUserQueueToBilling
                   -
+                    Name: "AWS_SQS_NEW_USER_LISTING_QUEUE"
+                    Value: !Ref evNewUserQueueToListing
+                  -
                     Name: "AWS_SQS_NEW_USER_QUEUE"
                     Value: !Ref evNewUserQueueToUser
+                  -
+                    Name: "AWS_SQS_UPDATE_USER_LISTING_QUEUE"
+                    Value: !Ref evUpdateUserQueueToListing
                   -
                     Name: "AWS_SNS_NEW_USER_TOPIC"
                     Value: !Ref evNewUserTopic
                   -
                     Name: "AWS_SNS_BILLING_EVENT_TOPIC"
                     Value: !Ref evNewBillingTopic
+                  -
+                    Name: "AWS_SNS_UPDATE_USER_TOPIC"
+                    Value: !Ref evUpdateUserTopic
+
                   -
                     Name: "S3_BUCKET"
                     Value: !Ref evS3Bucket

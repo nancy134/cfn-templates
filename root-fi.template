@@ -181,6 +181,10 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic2
+            evUpdateUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic3
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -193,6 +197,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue3
+            evNewUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue4
+            evUpdateUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue5
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
@@ -261,6 +273,10 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic2
+            evUpdateUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic3
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -273,6 +289,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue3
+            evNewUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue4
+            evUpdateUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue5
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
@@ -341,6 +365,10 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic2
+            evUpdateUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic3
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -353,6 +381,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue3
+            evNewUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue4
+            evUpdateUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue5
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
@@ -421,6 +457,10 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic2
+            evUpdateUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic3
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -433,6 +473,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue3
+            evNewUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue4
+            evUpdateUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue5
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
@@ -502,6 +550,10 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic2
+            evUpdateUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic3
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -514,6 +566,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue3
+            evNewUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue4
+            evUpdateUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue5
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
@@ -582,6 +642,10 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic2
+            evUpdateUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic3
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -594,6 +658,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue3
+            evNewUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue4
+            evUpdateUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue5
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
@@ -662,6 +734,10 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic2
+            evUpdateUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic3
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -674,6 +750,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue3
+            evNewUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue4
+            evUpdateUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue5
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
