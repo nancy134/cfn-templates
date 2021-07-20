@@ -9,7 +9,32 @@ Parameters:
     Domain:
       Type: String
       Default: "phowma.com"
+    LambdaBasicExecutionRole:
+      Type: String
 Resources:
+    LambdaRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/service-role/"
+            RoleName: !Sub "${DomainCode}-cognito-lambda-role"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - !Sub "arn:aws:iam::${AWS::AccountId}:policy/service-role/${LambdaBasicExecutionRole}"
+    LambdaFunctions:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            Description: !Sub "Lambda functions for ${DomainCode}"
+            FunctionName: !Sub "${DomainCode}-cognito-email-templates"
+            Handler: "dist/index.handler"
+            Role: !GetAtt LambdaRole.Arn
+            Code:
+                S3Bucket: !Sub "${DomainCode}-findingcre-lambda-functions"
+                S3Key: "cognito-email-templates"
+            Runtime: "nodejs14.x"
+            Timeout: 3
+            TracingConfig: 
+                Mode: "PassThrough"
     CognitoUserPool:
         Type: "AWS::Cognito::UserPool"
         Properties:
@@ -22,7 +47,8 @@ Resources:
                     RequireNumbers: true
                     RequireSymbols: true
                     TemporaryPasswordValidityDays: 7
-            LambdaConfig: {}
+            LambdaConfig:
+                CustomMessage: !GetAtt LambdaFunctions.Arn
             Schema: 
               - 
                 Name: "sub"
@@ -294,6 +320,14 @@ Resources:
             GroupName: "Admin"
             UserPoolId: !Ref CognitoUserPool
             RoleArn: !GetAtt IAMRole.Arn
+
+    LambdaPermission:
+        Type: "AWS::Lambda::Permission"
+        Properties:
+            Action: "lambda:InvokeFunction"
+            FunctionName: !GetAtt LambdaFunctions.Arn
+            Principal: "cognito-idp.amazonaws.com"
+            SourceArn: !GetAtt CognitoUserPool.Arn
 
 Outputs:
     CognitUserPool:

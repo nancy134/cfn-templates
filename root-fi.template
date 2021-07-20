@@ -52,6 +52,9 @@ Parameters:
     BucketName:
       Type: String
       Default: "{{resolve:ssm:/fi/BucketName:1}}"
+    LambdaBasicExecutionRole:
+      Type: String
+      Default: "{{resolve:ssm:/fi/LambdaBasicExecutionRole:1}}"
 Resources:
     EC2SecurityGroup:
         Type: "AWS::EC2::SecurityGroup"
@@ -87,6 +90,7 @@ Resources:
           Parameters:
             DomainCode: !Ref DomainCode
             Domain: !Ref Domain
+            LambdaBasicExecutionRole: !Ref LambdaBasicExecutionRole
 
     S3Stack:
         Type: AWS::CloudFormation::Stack
