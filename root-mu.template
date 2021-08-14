@@ -3,13 +3,16 @@ Description: "Root for all clusters"
 Parameters:
     DomainCode:
       Type: String
-      Default: "{{resolve:ssm:/ph/DomainCode:1}}"
+      Default: "{{resolve:ssm:/mu/DomainCode:1}}"
     Domain:
       Type: String
-      Default: "{{resolve:ssm:/ph/Domain:1}}"
+      Default: "{{resolve:ssm:/mu/Domain:1}}"
     CertificateArn:
       Type: String
-      Default: "{{resolve:ssm:/ph/CertificateArn:1}}"
+      Default: "{{resolve:ssm:/mu/CertificateArn:1}}"
+    CertificateArnNaked:
+      Type: String
+      Default: "{{resolve:ssm:/mu/CertificateArnNaked:1}}"
     DatabaseUserName:
       Type: String
       Default: "{{resolve:ssm:/ph/DatabaseUserName:1}}"
@@ -45,7 +48,7 @@ Parameters:
       Default: "{{resolve:ssm:/ph/AwsRegion:1}}"
     HostedZoneId:
       Type: String
-      Default: "{{resolve:ssm:/ph/HostedZoneId:1}}"
+      Default: "{{resolve:ssm:/mu/HostedZoneId:1}}"
     BucketName:
       Type: String
       Default: "{{resolve:ssm:/ph/BucketName:1}}"
@@ -772,5 +775,5 @@ Resources:
               Domain: !Ref Domain
               DomainCode: !Ref DomainCode
               BucketName: !Sub "${BucketName}-naked"
-              CertificateArn: !Ref CertificateArn
+              CertificateArn: !Ref CertificateArnNaked
 

@@ -39,10 +39,10 @@ Parameters:
       Default: "{{resolve:ssm:/ph/BraintreePrivateKey:1}}"
     AwsAccessKeyId:
       Type: String
-      Default: "{{resolve:ssm:/ph/AwsAccessKeyId:1}}"
+      Default: "{{resolve:ssm:/ph/AwsAccessKeyId:2}}"
     AwsSecretAccessKey:
       Type: String
-      Default: "{{resolve:ssm:/ph/AwsSecretAccessKey:1}}"
+      Default: "{{resolve:ssm:/ph/AwsSecretAccessKey:2}}"
     AwsRegion:
       Type: String
       Default: "{{resolve:ssm:/ph/AwsRegion:1}}"
