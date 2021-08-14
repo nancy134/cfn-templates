@@ -49,6 +49,7 @@ Resources:
                     TemporaryPasswordValidityDays: 7
             LambdaConfig:
                 CustomMessage: !GetAtt LambdaFunctions.Arn
+                PreSignUp: !GetAtt LambdaFunctions.Arn
             Schema: 
               - 
                 Name: "sub"
