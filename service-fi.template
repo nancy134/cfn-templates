@@ -79,6 +79,8 @@ Parameters:
         Type: "String"
     evS3Bucket:
         Type: "String"
+    evStripeSK:
+        Type: "String"
     TaskExecutionRole:
         Type: "String"
 Resources:
@@ -165,6 +167,9 @@ Resources:
                   -
                     Name: "S3_BUCKET"
                     Value: !Ref evS3Bucket
+                  -
+                    Name: "STRIPE_SK"
+                    Value: !Ref evStripeSK
                 Essential: true
                 Image: !Ref Image
                 Name: !Sub "${DomainCode}-${Service}-service-container" 

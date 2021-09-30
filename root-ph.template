@@ -52,6 +52,9 @@ Parameters:
     LambdaBasicExecutionRole:
       Type: String
       Default: "{{resolve:ssm:/ph/LambdaBasicExecutionRole:1}}"
+    StripeSK:
+      Type: String
+      Default: "{{resolve:ssm:/ph/StripeSK:1}}"
 Resources:
     EC2SecurityGroup:
         Type: "AWS::EC2::SecurityGroup"
@@ -163,6 +166,7 @@ Resources:
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evStripeSK: !Ref StripeSK
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -254,6 +258,7 @@ Resources:
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evStripeSK: !Ref StripeSK
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -290,7 +295,6 @@ Resources:
               Fn::GetAtt:
                 - S3Stack
                 - Outputs.BucketName
-
     ServiceStackBilling:
         DependsOn:
         - ClusterStack
@@ -346,6 +350,7 @@ Resources:
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evStripeSK: !Ref StripeSK
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -438,6 +443,7 @@ Resources:
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evStripeSK: !Ref StripeSK
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -531,6 +537,7 @@ Resources:
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evStripeSK: !Ref StripeSK
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -623,6 +630,7 @@ Resources:
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evStripeSK: !Ref StripeSK
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -715,6 +723,7 @@ Resources:
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evStripeSK: !Ref StripeSK
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack

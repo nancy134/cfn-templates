@@ -49,6 +49,9 @@ Parameters:
     BucketName:
       Type: String
       Default: "{{resolve:ssm:/ph/BucketName:1}}"
+    StripeSK:
+      Type: String
+      Default: "{{resolve:ssm:/ph/StripeSK:1}}"
 Resources:
     EC2SecurityGroup:
         Type: "AWS::EC2::SecurityGroup"
