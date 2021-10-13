@@ -55,6 +55,8 @@ Parameters:
         Type: "String"
     evMailService:
         Type: "String"
+    evConstantService:
+        Type: "String"
     evBraintreeMerchantId:
         Type: "String"
     evBraintreePublicKey:
@@ -79,7 +81,11 @@ Parameters:
         Type: "String"
     evS3Bucket:
         Type: "String"
+    evS3BucketMailTemplates:
+        Type: "String"
     evStripeSK:
+        Type: "String"
+    evCCSecret:
         Type: "String"
     TaskExecutionRole:
         Type: "String"
@@ -131,6 +137,9 @@ Resources:
                     Name: "MAIL_SERVICE"
                     Value: !Ref evMailService
                   -
+                    Name: "CONSTANT_SERVICE"
+                    Value: !Ref evConstantService
+                  -
                     Name: "BRAINTREE_MERCHANT_ID"
                     Value: !Ref evBraintreeMerchantId
                   -
@@ -168,8 +177,14 @@ Resources:
                     Name: "S3_BUCKET"
                     Value: !Ref evS3Bucket
                   -
+                    Name: "S3_BUCKET_MAIL_TEMPLATES"
+                    Value: !Ref evS3BucketMailTemplates
+                  -
                     Name: "STRIPE_SK"
                     Value: !Ref evStripeSK
+                  -
+                    Name: "CC_SECRET"
+                    Value: !Ref evCCSecret
                 Essential: true
                 Image: !Ref Image
                 Name: !Sub "${DomainCode}-${Service}-service-container" 

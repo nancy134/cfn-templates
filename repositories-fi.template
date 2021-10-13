@@ -50,3 +50,11 @@ Resources:
         TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/repository.template"
         Parameters:
             ServiceName: "user"
+
+  RepositoryStackConstant:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+        TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/repository.template"
+        Parameters:
+            ServiceName: "constant"
+

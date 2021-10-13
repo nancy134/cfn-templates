@@ -58,6 +58,10 @@ Parameters:
     StripeSK:
       Type: String
       Default: "{{resolve:ssm:/fi/StripeSK:1}}"
+    CCSecret:
+      Type: String
+      Default: "{{resolve:ssm:/fi/CCSecret:1}}"
+
 Resources:
     EC2SecurityGroup:
         Type: "AWS::EC2::SecurityGroup"
@@ -177,10 +181,12 @@ Resources:
             evBillingService: !Sub "https://billing-api.${Domain}"
             evListingService: !Sub "https://listing-api.${Domain}"
             evMailService: !Sub "https://mail-api.${Domain}"
+            evConstantService: !Sub "https://constant-api.${Domain}"
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
             evStripeSK: !Ref StripeSK
+            evCCSecret: !Ref CCSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -217,6 +223,10 @@ Resources:
               Fn::GetAtt:
                 - S3Stack
                 - Outputs.BucketName
+            evS3BucketMailTemplates:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketNameMailTemplates
 
     ServiceStackAuth:
         DependsOn:
@@ -270,10 +280,12 @@ Resources:
             evBillingService: !Sub "https://billing-api.${Domain}"
             evListingService: !Sub "https://listing-api.${Domain}"
             evMailService: !Sub "https://mail-api.${Domain}"
+            evConstantService: !Sub "https://constant-api.${Domain}"
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
             evStripeSK: !Ref StripeSK
+            evCCSecret: !Ref CCSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -310,6 +322,10 @@ Resources:
               Fn::GetAtt:
                 - S3Stack
                 - Outputs.BucketName
+            evS3BucketMailTemplates:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketNameMailTemplates
 
     ServiceStackBilling:
         DependsOn:
@@ -363,10 +379,12 @@ Resources:
             evBillingService: !Sub "https://billing-api.${Domain}"
             evListingService: !Sub "https://listing-api.${Domain}"
             evMailService: !Sub "https://mail-api.${Domain}"
+            evConstantService: !Sub "https://constant-api.${Domain}"
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
             evStripeSK: !Ref StripeSK
+            evCCSecret: !Ref CCSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -403,6 +421,10 @@ Resources:
               Fn::GetAtt:
                 - S3Stack
                 - Outputs.BucketName
+            evS3BucketMailTemplates:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketNameMailTemplates
 
     ServiceStackListing:
         DependsOn:
@@ -456,10 +478,12 @@ Resources:
             evBillingService: !Sub "https://billing-api.${Domain}"
             evListingService: !Sub "https://listing-api.${Domain}"
             evMailService: !Sub "https://mail-api.${Domain}"
+            evConstantService: !Sub "https://constant-api.${Domain}"
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
             evStripeSK: !Ref StripeSK
+            evCCSecret: !Ref CCSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -496,7 +520,10 @@ Resources:
               Fn::GetAtt:
                 - S3Stack
                 - Outputs.BucketName
-
+            evS3BucketMailTemplates:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketNameMailTemplates
 
     ServiceStackMail:
         DependsOn:
@@ -550,10 +577,12 @@ Resources:
             evBillingService: !Sub "https://billing-api.${Domain}"
             evListingService: !Sub "https://listing-api.${Domain}"
             evMailService: !Sub "https://mail-api.${Domain}"
+            evConstantService: !Sub "https://constant-api.${Domain}"
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
             evStripeSK: !Ref StripeSK
+            evCCSecret: !Ref CCSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -590,6 +619,10 @@ Resources:
               Fn::GetAtt:
                 - S3Stack
                 - Outputs.BucketName
+            evS3BucketMailTemplates:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketNameMailTemplates
 
     ServiceStackTenant:
         DependsOn:
@@ -643,10 +676,12 @@ Resources:
             evBillingService: !Sub "https://billing-api.${Domain}"
             evListingService: !Sub "https://listing-api.${Domain}"
             evMailService: !Sub "https://mail-api.${Domain}"
+            evConstantService: !Sub "https://constant-api.${Domain}"
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
             evStripeSK: !Ref StripeSK
+            evCCSecret: !Ref CCSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -683,6 +718,10 @@ Resources:
               Fn::GetAtt:
                 - S3Stack
                 - Outputs.BucketName
+            evS3BucketMailTemplates:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketNameMailTemplates
 
     ServiceStackUser:
         DependsOn:
@@ -736,10 +775,12 @@ Resources:
             evBillingService: !Sub "https://billing-api.${Domain}"
             evListingService: !Sub "https://listing-api.${Domain}"
             evMailService: !Sub "https://mail-api.${Domain}"
+            evConstantService: !Sub "https://constant-api.${Domain}" 
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
             evStripeSK: !Ref StripeSK
+            evCCSecret: !Ref CCSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -776,6 +817,109 @@ Resources:
               Fn::GetAtt:
                 - S3Stack
                 - Outputs.BucketName
+            evS3BucketMailTemplates:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketNameMailTemplates
+
+    ServiceStackConstant:
+        DependsOn:
+        - ClusterStack
+        - EC2SecurityGroup
+        Type: AWS::CloudFormation::Stack
+        Properties:
+          TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/service-fi.template"
+          Parameters:
+            ECSCluster:
+              Fn::GetAtt:
+              - ClusterStack
+              - Outputs.ECSCluster
+            ElasticLoadBalancingV2LoadBalancer:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2LoadBalancer
+            ElasticLoadBalancingV2Listener:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.ElasticLoadBalancingV2Listener
+
+            HostedZoneId:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.HostedZoneId
+            DNSName:
+              Fn::GetAtt:
+              - LoadBalancerStack
+              - Outputs.DNSName
+            TaskExecutionRole: !GetAtt TaskExecutionRole.Arn
+            ListenerPriority: "8"
+            Domain: !Ref Domain
+            DomainCode: !Ref DomainCode
+            VpcId: !Ref VpcId
+            EC2SecurityGroup: !Ref EC2SecurityGroup
+            Subnets:  !Join [",", [!Ref Subnet1, !Ref Subnet2]]
+            HostedZoneName: !Sub "${Domain}."
+            Service: "constant"
+            SubDomain: "constant-api"
+            DatabaseUserName: !Ref DatabaseUserName
+            DatabasePassword: !Ref DatabasePassword
+            DatabaseEndPoint: !ImportValue RDS-fi-Endpoint
+            Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/constant-service:latest"
+            evAwsAccessKeyId: !Ref AwsAccessKeyId
+            evAwsSecretAccessKey: !Ref AwsSecretAccessKey
+            evAwsRegion: !Ref AwsRegion
+            evTenantService: !Sub "https://tenant-api.${Domain}"
+            evAuthService: !Sub "https://auth-api.${Domain}"
+            evUserService: !Sub "https://user-api.${Domain}"
+            evBillingService: !Sub "https://billing-api.${Domain}"
+            evListingService: !Sub "https://listing-api.${Domain}"
+            evMailService: !Sub "https://mail-api.${Domain}"
+            evConstantService: !Sub "https://constant-api.${Domain}"
+            evBraintreeMerchantId: !Ref BraintreeMerchantId
+            evBraintreePublicKey: !Ref BraintreePublicKey
+            evBraintreePrivateKey: !Ref BraintreePrivateKey
+            evStripeSK: !Ref StripeSK
+            evCCSecret: !Ref CCSecret
+            evNewBillingTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic
+            evNewUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic2
+            evUpdateUserTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic3
+            evNewBillingQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue
+            evNewUserQueueToUser:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue2
+            evNewUserQueueToBilling:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue3
+            evNewUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue4
+            evUpdateUserQueueToListing:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue5
+            evS3Bucket:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketName
+            evS3BucketMailTemplates:
+              Fn::GetAtt:
+                - S3Stack
+                - Outputs.BucketNameMailTemplates
 
     AppStack:
         Type: AWS::CloudFormation::Stack

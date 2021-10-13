@@ -36,6 +36,39 @@ Resources:
                     Action: "s3:GetObject"
                     Resource: !Sub "arn:aws:s3:::${S3Bucket}/*"
 
+    S3BucketMailTemplates:
+        Type: "AWS::S3::Bucket"
+        Properties:
+            BucketName: !Sub "${DomainCode}-s3-mail-templates"
+            CorsConfiguration:
+                CorsRules:
+                  -
+                    AllowedHeaders:
+                      - "Authorization"
+                    AllowedMethods:
+                      - "GET"
+                    AllowedOrigins:
+                      - "*"
+
+    S3BucketPolicyMailTemplates:
+        Type: "AWS::S3::BucketPolicy"
+        DependsOn:
+        - S3BucketMailTemplates
+        Properties:
+            Bucket: !Ref S3BucketMailTemplates
+            PolicyDocument:
+                Version: "2008-10-17"
+                Statement:
+                  -
+                    Sid: "AllowPublicRead"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: "*"
+                    Action: "s3:GetObject"
+                    Resource: !Sub "arn:aws:s3:::${S3BucketMailTemplates}/*"
+
 Outputs:
     BucketName:
         Value: !Ref S3Bucket
+    BucketNameMailTemplates:
+        Value: !Ref S3BucketMailTemplates
