@@ -44,7 +44,7 @@ Resources:
                     CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6"
                     SmoothStreaming: false
                     TargetOriginId: !Sub "S3-${DomainCode}-${BucketName}"
-                    ViewerProtocolPolicy: "allow-all"
+                    ViewerProtocolPolicy: "redirect-to-https"
                 CustomErrorResponses:
                   -
                     ErrorCode: 403
