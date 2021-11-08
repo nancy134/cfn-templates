@@ -57,6 +57,10 @@ Parameters:
         Type: "String"
     evConstantService:
         Type: "String"
+    evSparkService:
+        Type: "String"
+    evImageService:
+        Type: "String"
     evBraintreeMerchantId:
         Type: "String"
     evBraintreePublicKey:
@@ -86,6 +90,8 @@ Parameters:
     evStripeSK:
         Type: "String"
     evCCSecret:
+        Type: "String"
+    evSparkClientSecret:
         Type: "String"
 Resources:
 
@@ -138,6 +144,12 @@ Resources:
                     Name: "CONSTANT_SERVICE"
                     Value: !Ref evConstantService
                   -
+                    Name: "SPARK_SERVICE"
+                    Value: !Ref evSparkService
+                  -
+                    Name: "IMAGE_SERVICE"
+                    Value: !Ref evImageService
+                  -
                     Name: "BRAINTREE_MERCHANT_ID"
                     Value: !Ref evBraintreeMerchantId
                   -
@@ -182,6 +194,9 @@ Resources:
                   -
                     Name: "CC_SECRET"
                     Value: !Ref evCCSecret
+                  -
+                    Name: "SPARK_CLIENT_SECRET"
+                    Value: !Ref evSparkClientSecret
                 Essential: true
                 Image: !Ref Image
                 Name: !Sub "${DomainCode}-${Service}-service-container" 
