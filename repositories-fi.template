@@ -58,3 +58,18 @@ Resources:
         Parameters:
             ServiceName: "constant"
 
+  RepositoryStackSpark:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+        TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/repository.template"
+        Parameters:
+            ServiceName: "spark"
+
+  RepositoryStackImage:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+        TemplateURL: "https://fi-cf-templates.s3.amazonaws.com/repository.template"
+        Parameters:
+            ServiceName: "image"
+
+

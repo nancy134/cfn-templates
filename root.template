@@ -163,6 +163,8 @@ Resources:
             evListingService: !Sub "https://listing-api.${Domain}"
             evMailService: !Sub "https://mail-api.${Domain}"
             evConstantService: !Sub "https://constant-api.${Domain}"
+            evSparkService: !Sub "https://spark-api.${Domain}"
+            evImageService: !Sub "https://image-api.${Domain}"
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
@@ -261,6 +263,8 @@ Resources:
             evListingService: !Sub "https://listing-api.${Domain}"
             evMailService: !Sub "https://mail-api.${Domain}"
             evConstantService: !Sub "https://constant-api.${Domain}"
+            evSparkService: !Sub "https://spark-api.${Domain}"
+            evImageService: !Sub "https://image-api.${Domain}"
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
@@ -360,6 +364,8 @@ Resources:
             evListingService: !Sub "https://listing-api.${Domain}"
             evMailService: !Sub "https://mail-api.${Domain}"
             evConstantService: !Sub "https://constant-api.${Domain}"
+            evSparkService: !Sub "https://spark-api.${Domain}"
+            evImageService: !Sub "https://image-api.${Domain}"
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
@@ -460,6 +466,8 @@ Resources:
             evListingService: !Sub "https://listing-api.${Domain}"
             evMailService: !Sub "https://mail-api.${Domain}"
             evConstantService: !Sub "https://constant-api.${Domain}"
+            evSparkService: !Sub "https://spark-api.${Domain}"
+            evImageService: !Sub "https://image-api.${Domain}"
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
@@ -561,6 +569,8 @@ Resources:
             evListingService: !Sub "https://listing-api.${Domain}"
             evMailService: !Sub "https://mail-api.${Domain}"
             evConstantService: !Sub "https://constant-api.${Domain}"
+            evSparkService: !Sub "https://spark-api.${Domain}"
+            evImageService: !Sub "https://image-api.${Domain}"
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
@@ -661,6 +671,8 @@ Resources:
             evListingService: !Sub "https://listing-api.${Domain}"
             evMailService: !Sub "https://mail-api.${Domain}"
             evConstantService: !Sub "https://constant-api.${Domain}"
+            evSparkService: !Sub "https://spark-api.${Domain}"
+            evImageService: !Sub "https://image-api.${Domain}"
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
@@ -760,6 +772,8 @@ Resources:
             evListingService: !Sub "https://listing-api.${Domain}"
             evMailService: !Sub "https://mail-api.${Domain}"
             evConstantService: !Sub "https://constant-api.${Domain}"
+            evSparkService: !Sub "https://spark-api.${Domain}"
+            evImageService: !Sub "https://image-api.${Domain}"
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
@@ -859,6 +873,8 @@ Resources:
             evListingService: !Sub "https://listing-api.${Domain}"
             evMailService: !Sub "https://mail-api.${Domain}"
             evConstantService: !Sub "https://constant-api.${Domain}"
+            evSparkService: !Sub "https://spark-api.${Domain}"
+            evImageService: !Sub "https://image-api.${Domain}"
             evBraintreeMerchantId: !Ref BraintreeMerchantId
             evBraintreePublicKey: !Ref BraintreePublicKey
             evBraintreePrivateKey: !Ref BraintreePrivateKey
