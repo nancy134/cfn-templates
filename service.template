@@ -314,3 +314,8 @@ Resources:
                     Subnets: !Ref Subnets
             HealthCheckGracePeriodSeconds: 0
             SchedulingStrategy: "REPLICA"
+
+Outputs:
+    ElasticLoadBalancingV2TargetGroup:
+        Description: "Target Group"
+        Value: !Ref ElasticLoadBalancingV2TargetGroup

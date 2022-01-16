@@ -123,6 +123,7 @@ Resources:
             VpcId: !Ref VpcId
             CertificateArn: !Ref CertificateArn
 
+
     ServiceStackApi:
         DependsOn:
         - ClusterStack
@@ -151,7 +152,7 @@ Resources:
               Fn::GetAtt:
               - LoadBalancerStack
               - Outputs.DNSName
-            ListenerPriority: "1"
+            ListenerPriority: "2"
             VpcId: !Ref VpcId
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
@@ -253,7 +254,7 @@ Resources:
               - LoadBalancerStack
               - Outputs.DNSName
             VpcId: !Ref VpcId
-            ListenerPriority: "2"
+            ListenerPriority: "3"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
             EC2SecurityGroup: !Ref EC2SecurityGroup
@@ -354,7 +355,7 @@ Resources:
               - LoadBalancerStack
               - Outputs.DNSName
 
-            ListenerPriority: "3"
+            ListenerPriority: "4"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
             VpcId: !Ref VpcId
@@ -456,7 +457,7 @@ Resources:
               - LoadBalancerStack
               - Outputs.DNSName
 
-            ListenerPriority: "4"
+            ListenerPriority: "5"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
             VpcId: !Ref VpcId
@@ -558,7 +559,7 @@ Resources:
               - LoadBalancerStack
               - Outputs.DNSName
 
-            ListenerPriority: "5"
+            ListenerPriority: "6"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
             VpcId: !Ref VpcId
@@ -660,7 +661,7 @@ Resources:
               - LoadBalancerStack
               - Outputs.DNSName
 
-            ListenerPriority: "6"
+            ListenerPriority: "7"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
             VpcId: !Ref VpcId
@@ -762,7 +763,7 @@ Resources:
               - LoadBalancerStack
               - Outputs.DNSName
 
-            ListenerPriority: "7"
+            ListenerPriority: "8"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
             VpcId: !Ref VpcId
@@ -864,7 +865,7 @@ Resources:
               - LoadBalancerStack
               - Outputs.DNSName
 
-            ListenerPriority: "8"
+            ListenerPriority: "9"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
             VpcId: !Ref VpcId
@@ -966,7 +967,7 @@ Resources:
               - LoadBalancerStack
               - Outputs.DNSName
 
-            ListenerPriority: "9"
+            ListenerPriority: "10"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
             VpcId: !Ref VpcId
@@ -1068,7 +1069,7 @@ Resources:
               - LoadBalancerStack
               - Outputs.DNSName
 
-            ListenerPriority: "10"
+            ListenerPriority: "11"
             Domain: !Ref Domain
             DomainCode: !Ref DomainCode
             VpcId: !Ref VpcId
@@ -1150,6 +1151,15 @@ Resources:
               DomainCode: !Ref DomainCode
               BucketName: !Ref BucketName
               CertificateArn: !Ref CertificateArn
+              ApiTargetGroup:
+                Fn::GetAtt:
+                  - ServiceStackApi
+                  - Outputs.ElasticLoadBalancingV2TargetGroup
+              ElasticLoadBalancingV2Listener:
+                Fn::GetAtt:
+                  - LoadBalancerStack
+                  - Outputs.ElasticLoadBalancingV2Listener
+
 
     AppStackNaked:
         Type: AWS::CloudFormation::Stack

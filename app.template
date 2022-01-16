@@ -12,6 +12,10 @@ Parameters:
       Type: "String"
     CertificateArn:
       Type: "String"
+    ApiTargetGroup:
+      Type: "String"
+    ElasticLoadBalancingV2Listener:
+      Type: "String"
 Resources:
 
     CloudFrontDistribution:
@@ -103,4 +107,26 @@ Resources:
                     Principal: "*"
                     Action: "s3:GetObject"
                     Resource: !Sub "arn:aws:s3:::${DomainCode}-${BucketName}/*"
+
+    ElasticLoadBalancingV2ListenerRule:
+        Type: "AWS::ElasticLoadBalancingV2::ListenerRule"
+        Properties:
+            Priority: 1
+            ListenerArn: !Ref ElasticLoadBalancingV2Listener
+            Conditions:
+              -
+                Field: "host-header"
+                Values:
+                  - !Sub "www.${Domain}"
+            Actions:
+              -
+                Type: "forward"
+                TargetGroupArn: !Ref ApiTargetGroup
+                ForwardConfig:
+                    TargetGroups:
+                      -
+                        TargetGroupArn: !Ref ApiTargetGroup
+                        Weight: 1
+                    TargetGroupStickinessConfig:
+                        Enabled: false
 
