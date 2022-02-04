@@ -1151,6 +1151,7 @@ Resources:
               DomainCode: !Ref DomainCode
               BucketName: !Ref BucketName
               CertificateArn: !Ref CertificateArn
+              LambdaBasicExecutionRole: !Ref LambdaBasicExecutionRole
               ApiTargetGroup:
                 Fn::GetAtt:
                   - ServiceStackApi
@@ -1159,6 +1160,14 @@ Resources:
                 Fn::GetAtt:
                   - LoadBalancerStack
                   - Outputs.ElasticLoadBalancingV2Listener
+              ElasticLoadBalancingV2LoadBalancer:
+                Fn::GetAtt:
+                  - LoadBalancerStack
+                  - Outputs.ElasticLoadBalancingV2LoadBalancer
+              DNSName:
+                Fn::GetAtt:
+                  - LoadBalancerStack
+                  - Outputs.DNSName
 
 
     AppStackNaked:
