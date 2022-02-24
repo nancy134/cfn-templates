@@ -73,6 +73,10 @@ Parameters:
         Type: "String"
     evUpdateUserTopic:
         Type: "String"
+    evSyncCCContactTopic:
+        Type: "String"
+    evSyncSparkContactTopic:
+        Type: "String"
     evNewBillingQueueToBilling:
         Type: "String"
     evNewUserQueueToUser:
@@ -82,6 +86,10 @@ Parameters:
     evNewUserQueueToListing:
         Type: "String"
     evUpdateUserQueueToListing:
+        Type: "String"
+    evSyncCCContactToSpark:
+        Type: "String"
+    evSyncSparkContactToCC:
         Type: "String"
     evS3Bucket:
         Type: "String"
@@ -174,6 +182,12 @@ Resources:
                     Name: "AWS_SQS_UPDATE_USER_LISTING_QUEUE"
                     Value: !Ref evUpdateUserQueueToListing
                   -
+                    Name: "AWS_SQS_CC_SYNC_CONTACT_TO_SPARK"
+                    Value: !Ref evSyncCCContactToSpark
+                  -
+                    Name: "AWS_SQS_SPARK_SYNC_CONTACT_TO_CC"
+                    Value: !Ref evSyncSparkContactToCC
+                  -
                     Name: "AWS_SNS_NEW_USER_TOPIC"
                     Value: !Ref evNewUserTopic
                   -
@@ -182,6 +196,12 @@ Resources:
                   -
                     Name: "AWS_SNS_UPDATE_USER_TOPIC"
                     Value: !Ref evUpdateUserTopic
+                  -
+                    Name: "AWS_SNS_SYNC_CC_CONTACT_TOPIC"
+                    Value: !Ref evSyncCCContactTopic
+                  -
+                    Name: "AWS_SNS_SYNC_SPARK_CONTACT_TOPIC"
+                    Value: !Ref evSyncSparkContactTopic
                   -
                     Name: "S3_BUCKET"
                     Value: !Ref evS3Bucket

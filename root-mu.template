@@ -195,6 +195,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic3
+            evSyncCCContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic4
+            evSyncSparkContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic5
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -215,6 +223,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue5
+            evSyncCCContactToSpark:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue6
+            evSyncSparkContactToCC:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue7
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
@@ -296,6 +312,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic3
+            evSyncCCContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic4
+            evSyncSparkContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic5
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -316,6 +340,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue5
+            evSyncCCContactToSpark:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue6
+            evSyncSparkContactToCC:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue7
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
@@ -398,6 +430,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic3
+            evSyncCCContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic4
+            evSyncSparkContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic5
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -418,6 +458,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue5
+            evSyncCCContactToSpark:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue6
+            evSyncSparkContactToCC:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue7
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
@@ -500,6 +548,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic3
+            evSyncCCContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic4
+            evSyncSparkContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic5
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -520,6 +576,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue5
+            evSyncCCContactToSpark:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue6
+            evSyncSparkContactToCC:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue7
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
@@ -602,6 +666,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic3
+            evSyncCCContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic4
+            evSyncSparkContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic5
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -622,6 +694,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue5
+            evSyncCCContactToSpark:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue6
+            evSyncSparkContactToCC:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue7
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
@@ -704,6 +784,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic3
+            evSyncCCContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic4
+            evSyncSparkContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic5
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -724,6 +812,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue5
+            evSyncCCContactToSpark:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue6
+            evSyncSparkContactToCC:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue7
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
@@ -806,6 +902,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic3
+            evSyncCCContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic4
+            evSyncSparkContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic5
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -826,6 +930,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue5
+            evSyncCCContactToSpark:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue6
+            evSyncSparkContactToCC:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue7
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
@@ -908,6 +1020,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic3
+            evSyncCCContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic4
+            evSyncSparkContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic5
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -928,6 +1048,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue5
+            evSyncCCContactToSpark:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue6
+            evSyncSparkContactToCC:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue7
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
@@ -1010,6 +1138,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic3
+            evSyncCCContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic4
+            evSyncSparkContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic5
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -1030,6 +1166,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue5
+            evSyncCCContactToSpark:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue6
+            evSyncSparkContactToCC:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue7
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
@@ -1112,6 +1256,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SNSTopic3
+            evSyncCCContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic4
+            evSyncSparkContactTopic:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SNSTopic5
             evNewBillingQueueToBilling:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -1132,6 +1284,14 @@ Resources:
               Fn::GetAtt:
                 - SnsSqsStack
                 - Outputs.SQSQueue5
+            evSyncCCContactToSpark:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue6
+            evSyncSparkContactToCC:
+              Fn::GetAtt:
+                - SnsSqsStack
+                - Outputs.SQSQueue7
             evS3Bucket:
               Fn::GetAtt:
                 - S3Stack
