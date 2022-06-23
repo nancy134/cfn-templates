@@ -60,7 +60,7 @@ Parameters:
       Default: "{{resolve:ssm:/ph/StripeSK:1}}"
     CCSecret:
       Type: String
-      Default: "{{resolve:ssm:/mu/CCSecret:1}}"
+      Default: "{{resolve:ssm:/mu/CCSecret:2}}"
     SparkClientSecret:
       Type: String
       Default: "{{resolve:ssm:/mu/SparkClientSecret:1}}"
