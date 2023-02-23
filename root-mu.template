@@ -64,6 +64,12 @@ Parameters:
     SparkClientSecret:
       Type: String
       Default: "{{resolve:ssm:/mu/SparkClientSecret:1}}"
+    GoogleClientId:
+      Type: String
+      Default: "{{resolve:ssm:/mu/GoogleClientId:1}}"
+    GoogleClientSecret:
+      Type: String
+      Default: "{{resolve:ssm:/mu/GoogleClientSecret:2}}"
 
 Resources:
     EC2SecurityGroup:
@@ -183,6 +189,8 @@ Resources:
             evStripeSK: !Ref StripeSK
             evCCSecret: !Ref CCSecret
             evSparkClientSecret: !Ref SparkClientSecret
+            evGoogleClientId: !Ref GoogleClientId
+            evGoogleClientSecret: !Ref GoogleClientSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -300,6 +308,8 @@ Resources:
             evStripeSK: !Ref StripeSK
             evCCSecret: !Ref CCSecret
             evSparkClientSecret: !Ref SparkClientSecret
+            evGoogleClientId: !Ref GoogleClientId
+            evGoogleClientSecret: !Ref GoogleClientSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -418,6 +428,8 @@ Resources:
             evStripeSK: !Ref StripeSK
             evCCSecret: !Ref CCSecret
             evSparkClientSecret: !Ref SparkClientSecret
+            evGoogleClientId: !Ref GoogleClientId
+            evGoogleClientSecret: !Ref GoogleClientSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -536,6 +548,8 @@ Resources:
             evStripeSK: !Ref StripeSK
             evCCSecret: !Ref CCSecret
             evSparkClientSecret: !Ref SparkClientSecret
+            evGoogleClientId: !Ref GoogleClientId
+            evGoogleClientSecret: !Ref GoogleClientSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -654,6 +668,8 @@ Resources:
             evStripeSK: !Ref StripeSK
             evCCSecret: !Ref CCSecret
             evSparkClientSecret: !Ref SparkClientSecret
+            evGoogleClientId: !Ref GoogleClientId
+            evGoogleClientSecret: !Ref GoogleClientSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -772,6 +788,8 @@ Resources:
             evStripeSK: !Ref StripeSK
             evCCSecret: !Ref CCSecret
             evSparkClientSecret: !Ref SparkClientSecret
+            evGoogleClientId: !Ref GoogleClientId
+            evGoogleClientSecret: !Ref GoogleClientSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -890,6 +908,8 @@ Resources:
             evStripeSK: !Ref StripeSK
             evCCSecret: !Ref CCSecret
             evSparkClientSecret: !Ref SparkClientSecret
+            evGoogleClientId: !Ref GoogleClientId
+            evGoogleClientSecret: !Ref GoogleClientSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -1008,6 +1028,8 @@ Resources:
             evStripeSK: !Ref StripeSK
             evCCSecret: !Ref CCSecret
             evSparkClientSecret: !Ref SparkClientSecret
+            evGoogleClientId: !Ref GoogleClientId
+            evGoogleClientSecret: !Ref GoogleClientSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -1126,6 +1148,8 @@ Resources:
             evStripeSK: !Ref StripeSK
             evCCSecret: !Ref CCSecret
             evSparkClientSecret: !Ref SparkClientSecret
+            evGoogleClientId: !Ref GoogleClientId
+            evGoogleClientSecret: !Ref GoogleClientSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack
@@ -1244,6 +1268,8 @@ Resources:
             evStripeSK: !Ref StripeSK
             evCCSecret: !Ref CCSecret
             evSparkClientSecret: !Ref SparkClientSecret
+            evGoogleClientId: !Ref GoogleClientId
+            evGoogleClientSecret: !Ref GoogleClientSecret
             evNewBillingTopic:
               Fn::GetAtt:
                 - SnsSqsStack

@@ -101,6 +101,10 @@ Parameters:
         Type: "String"
     evSparkClientSecret:
         Type: "String"
+    evGoogleClientId:
+        Type: "String"
+    evGoogleClientSecret:
+        Type: "String"
 Resources:
 
     Route53RecordSet:
@@ -217,6 +221,12 @@ Resources:
                   -
                     Name: "SPARK_CLIENT_SECRET"
                     Value: !Ref evSparkClientSecret
+                  -
+                    Name: "GOOGLE_CLIENT_ID"
+                    Value: !Ref evGoogleClientId
+                  -
+                    Name: "GOOGLE_CLIENT_SECRET"
+                    Value: !Ref evGoogleClientSecret
                 Essential: true
                 Image: !Ref Image
                 Name: !Sub "${DomainCode}-${Service}-service-container" 
