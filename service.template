@@ -61,6 +61,8 @@ Parameters:
         Type: "String"
     evImageService:
         Type: "String"
+    evSmartcarService:
+        Type: "String"
     evBraintreeMerchantId:
         Type: "String"
     evBraintreePublicKey:
@@ -104,6 +106,14 @@ Parameters:
     evGoogleClientId:
         Type: "String"
     evGoogleClientSecret:
+        Type: "String"
+    evGoogleApiKey:
+        Type: "String"
+    evSmartcarClientId:
+        Type: "String"
+    evSmartcarClientSecret:
+        Type: "String"
+    evSmartcarRedirectUri:
         Type: "String"
 Resources:
 
@@ -161,6 +171,9 @@ Resources:
                   -
                     Name: "IMAGE_SERVICE"
                     Value: !Ref evImageService
+                  -
+                    Name: "SMARTCAR_SERVICE"
+                    Value: !Ref evSmartcarService
                   -
                     Name: "BRAINTREE_MERCHANT_ID"
                     Value: !Ref evBraintreeMerchantId
@@ -227,6 +240,18 @@ Resources:
                   -
                     Name: "GOOGLE_CLIENT_SECRET"
                     Value: !Ref evGoogleClientSecret
+                  -
+                    Name: "GOOGLE_API_KEY"
+                    Value: !Ref evGoogleApiKey
+                  -
+                    Name: "SMARTCAR_CLIENT_ID"
+                    Value: !Ref evSmartcarClientId
+                  -
+                    Name: "SMARTCAR_CLIENT_SECRET"
+                    Value: !Ref evSmartcarClientSecret 
+                  -
+                    Name: "SMARTCAR_REDIRECT_URI"
+                    Value: !Ref evSmartcarRedirectUri
                 Essential: true
                 Image: !Ref Image
                 Name: !Sub "${DomainCode}-${Service}-service-container" 
