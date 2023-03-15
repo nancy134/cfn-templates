@@ -81,7 +81,7 @@ Parameters:
       Default: "{{resolve:ssm:/mu/SmartcarClientSecret:1}}"
     SmartcarRedirectUri: 
       Type: String
-      Default: "{{resolve:ssm:/mu/SmartcarRedirectUri:1}}"
+      Default: "{{resolve:ssm:/mu/SmartcarRedirectUri:2}}"
 
 Resources:
     EC2SecurityGroup:
